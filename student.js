@@ -1,43 +1,41 @@
-let student = null;
-const studentCompanyList = document.getElementById("studentCompanyList");
+function register(){
 
-async function registerStudent() {
-  const data = {
-    name: sname.value,
-    branch: branch.value,
-    skills: skills.value,
-    cgpa: Number(scgpa.value)
-  };
-
-  const res = await fetch("/api/students", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  });
-
-  const result = await res.json();
-  student = { ...data, id: result.studentId };
-
-  loadCompanies();
+const companies=[
+{
+name:"Google",
+role:"SDE",
+package:"20 LPA",
+location:"Bangalore",
+cgpa:8
+},
+{
+name:"Amazon",
+role:"Developer",
+package:"18 LPA",
+location:"Hyderabad",
+cgpa:7.5
 }
+]
 
-async function loadCompanies() {
-  const res = await fetch("/api/companies");
-  const data = await res.json();
+let container=document.getElementById("companies")
 
-  studentCompanyList.innerHTML = "";
+companies.forEach(c=>{
 
-  data.data.forEach(company => {
-    const eligible = student && student.cgpa >= company.minCgpa;
+container.innerHTML+=`
 
-    studentCompanyList.innerHTML += `
-      <div class="card ${eligible ? "green" : "red"}">
-        <h3>${company.name}</h3>
-        <p>Role: ${company.role}</p>
-        <p>Package: ${company.package}</p>
-        <p>Location: ${company.location}</p>
-        <p>Required CGPA: ${company.minCgpa}</p>
-      </div>
-    `;
-  });
+<div class="company">
+
+<h3>${c.name}</h3>
+
+<p>Role: ${c.role}</p>
+<p>Package: ${c.package}</p>
+<p>Location: ${c.location}</p>
+<p>Required CGPA: ${c.cgpa}</p>
+
+</div>
+
+`
+
+})
+
 }
