@@ -1,3 +1,8 @@
 node_modules/
 .env
 *.log
+
+# Documentation and testing files (kept local only)
+COMPLETE_EXPLANATION_GUIDE.md
+COMPANY_API_TESTING.md
+test_download.json

@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "id": 1,
+    "name": "Google",
+    "role": "Software Engineer",
+    "minCgpa": 7.5,
+    "location": "Bangalore",
+    "package": "25 LPA",
+    "createdAt": "2026-03-04T14:03:09.200Z"
+  },
+  {
+    "id": 2,
+    "name": "Amazon",
+    "role": "SDE-1",
+    "minCgpa": 7,
+    "location": "Mumbai",
+    "package": "22 LPA",
+    "createdAt": "2026-03-04T14:09:37.627Z"
+  }
+]
