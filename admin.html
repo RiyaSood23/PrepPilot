@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<div class="layout">
+
+  <aside class="sidebar">
+    <h2>Placement</h2>
+    <ul>
+      <li>Dashboard</li>
+      <li>Add Company</li>
+      <li>Reports</li>
+    </ul>
+  </aside>
+
+  <main class="content">
+
+    <div class="topbar">
+      <h1>Admin Dashboard</h1>
+      <div>
+        <button onclick="toggleForm()">+ Add Company</button>
+        <button onclick="downloadData()">Download</button>
+      </div>
+    </div>
+
+    <div id="formContainer" class="glass hidden">
+      <input type="text" id="name" placeholder="Company Name">
+      <input type="text" id="role" placeholder="Role">
+      <input type="text" id="package" placeholder="Package">
+      <input type="text" id="location" placeholder="Location">
+      <input type="number" id="cgpa" placeholder="Minimum CGPA">
+      <button onclick="addCompany()">Submit</button>
+    </div>
+
+    <div id="companyList" class="grid"></div>
+
+  </main>
+
+</div>
+
+<script src="js/admin.js"></script>
+</body>
+</html>

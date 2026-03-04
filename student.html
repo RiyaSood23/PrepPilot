@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Portal</title>
+  <link rel="stylesheet" href="student.css">
+</head>
+<body>
+
+<header>
+  <h2>Student Portal</h2>
+</header>
+
+<div class="register">
+  <input type="text" id="sname" placeholder="Name">
+  <input type="text" id="branch" placeholder="Branch">
+  <input type="text" id="skills" placeholder="Skills">
+  <input type="number" id="scgpa" placeholder="CGPA">
+  <button onclick="registerStudent()">Register</button>
+</div>
+
+<h3>Available Companies</h3>
+<div id="studentCompanyList" class="grid"></div>
+
+<script src="js/student.js"></script>
+</body>
+</html>
