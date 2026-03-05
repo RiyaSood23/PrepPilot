@@ -23,7 +23,7 @@ body {
     align-items: center;
     justify-content: space-between;
 }
-.logo { font-size:28px; font-weight:800; background:linear-gradient(90deg,#22c55e,#86efac); -webkit-background-clip:text; -webkit-text-fill-color:transparent; cursor:pointer; }
+.logo { font-size:28px; font-weight:800; background:linear-gradient(90deg,#22c55e,#86efac); -webkit-text-fill-color:transparent; cursor:pointer; }
 .nav-links a { color:#a3a3a3; text-decoration:none; margin-left:32px; font-weight:500; }
 .nav-links a:hover, .nav-links a.active { color:#22c55e; }
 
