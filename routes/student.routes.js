@@ -1,14 +1,19 @@
-// Student routes - API endpoints for student operations
-// TODO: Implement routes for GET, POST, PUT, DELETE operations
 const express = require("express");
 const router = express.Router();
 
-// Temporary route (Member 3 will implement logic later)
-router.get("/", (req, res) => {
-  res.json({
-    success: true,
-    message: "Students route working"
-  });
-});
+const {
+  registerStudent,
+  checkEligibility
+} = require("../controllers/student.controller");
+
+// Base path (in server.js): /api/students
+
+// Register student
+// POST /api/students
+router.post("/", registerStudent);
+
+// Check eligibility
+// GET /api/students/check/:studentId/:companyId
+router.get("/check/:studentId/:companyId", checkEligibility);
 
 module.exports = router;

@@ -1,1 +1,13 @@
-[]
+[
+  {
+    "id": 1772735649007,
+    "name": "Alice Sharma",
+    "branch": "CSE",
+    "skills": [
+      "JavaScript",
+      "Node.js",
+      "MongoDB"
+    ],
+    "cgpa": 8.5
+  }
+]
