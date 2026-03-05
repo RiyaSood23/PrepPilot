@@ -1,31 +1,71 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-<title>Student Portal</title>
-<link rel="stylesheet" href="student.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Placement Portal</title>
+  <link rel="stylesheet" href="student.css">
 </head>
-
 <body>
 
-<h1>Student Registration</h1>
+  <div class="container">
+    <header>
+      <h1>Student Placement Portal</h1>
+      <p>Find your dream Job</p>
+    </header>
 
-<div class="form">
+    <main>
+      <section class="registration-section" id="registrationSection">
+        <h2 class="section-title" id="sectionTitle">Student Registration</h2>
+        
+        <div class="form-container" id="formContainer">
+          <form id="studentForm">
+            <div class="form-group">
+              <label for="name">Full Name</label>
+              <input type="text" id="name" required placeholder="Enter your full name">
+            </div>
+            
+            <div class="form-group">
+              <label for="branch">Branch</label>
+              <select id="branch" required>
+                <option value="" disabled selected>Select your branch</option>
+                <option value="CSE">Computer Science & Engineering</option>
+                <option value="IT">Information Technology</option>
+                <option value="ECE">Electronics & Communication</option>
+                <option value="EEE">Electrical & Electronics</option>
+                <option value="MECH">Mechanical Engineering</option>
+                <option value="CIVIL">Civil Engineering</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="skills">Skills (comma separated)</label>
+              <input type="text" id="skills" placeholder="React, Node.js, Python, DSA, etc." required>
+            </div>
+            
+            <div class="form-group">
+              <label for="cgpa">CGPA (out of 10)</label>
+              <input type="number" id="cgpa" step="0.01" min="0" max="10" required placeholder="8.45">
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Register</button>
+          </form>
+        </div>
+      </section>
 
-<input id="name" placeholder="Name">
-<input id="branch" placeholder="Branch">
-<input id="skills" placeholder="Skills">
-<input id="cgpa" placeholder="CGPA">
+      <section class="companies-section">
+        <h2 class="section-title">Available Opportunities</h2>
+        
+        <div class="companies-grid" id="companiesGrid">
+          <!-- Companies will be populated by JS -->
+        </div>
+      </section>
+    </main>
+  </div>
 
-<button onclick="register()">Register</button>
+  <!-- Toast Notification -->
+  <div id="toast" class="toast">Registration Successful</div>
 
-</div>
-
-<h2>Companies</h2>
-
-<div id="companies"></div>
-
-<script src="student.js"></script>
-
+  <script src="student.js"></script>
 </body>
 </html>

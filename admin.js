@@ -1,245 +1,182 @@
-let companies=[
+// js/admin.js
+let companies = [];
 
-{
-name:"Google",
-role:"SDE",
-package:"20 LPA",
-location:"Bangalore",
-cgpa:8
-},
+const STORAGE_KEY = 'placeTrackCompanies';
 
-{
-name:"Amazon",
-role:"Developer",
-package:"18 LPA",
-location:"Hyderabad",
-cgpa:7.5
-},
+const defaultCompanies = [
+    {
+        id: 1,
+        name: "Google",
+        role: "Software Engineer",
+        package: "45 LPA",
+        location: "Bangalore",
+        minCGPA: 8.0,
+        logo: "https://picsum.photos/id/1015/600/300"
+    },
+    {
+        id: 2,
+        name: "Microsoft",
+        role: "Product Manager",
+        package: "40 LPA",
+        location: "Hyderabad",
+        minCGPA: 7.5,
+        logo: "https://picsum.photos/id/102/600/300"
+    },
+    {
+        id: 3,
+        name: "Amazon",
+        role: "SDE - 1",
+        package: "35 LPA",
+        location: "Chennai",
+        minCGPA: 7.0,
+        logo: "https://picsum.photos/id/1033/600/300"
+    },
+    {
+        id: 4,
+        name: "Deloitte",
+        role: "Consultant",
+        package: "12 LPA",
+        location: "Mumbai",
+        minCGPA: 6.5,
+        logo: "https://picsum.photos/id/1040/600/300"
+    },
+    {
+        id: 5,
+        name: "TCS",
+        role: "Systems Engineer",
+        package: "7 LPA",
+        location: "Delhi",
+        minCGPA: 6.0,
+        logo: "https://picsum.photos/id/106/600/300"
+    }
+];
 
-{
-name:"Microsoft",
-role:"Engineer",
-package:"22 LPA",
-location:"Noida",
-cgpa:8
-},
-
-{
-name:"Adobe",
-role:"Developer",
-package:"19 LPA",
-location:"Bangalore",
-cgpa:7.5
-},
-
-{
-name:"Flipkart",
-role:"SDE",
-package:"17 LPA",
-location:"Bangalore",
-cgpa:7
+function loadCompanies() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+        companies = JSON.parse(saved);
+    } else {
+        companies = [...defaultCompanies];
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(companies));
+    }
+    renderCompanies();
 }
 
-]
-
-let deleteIndex=null
-
-
-function openForm(){
-
-document.getElementById("form").classList.remove("hidden")
-
+function saveCompanies() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(companies));
+    renderCompanies();
 }
 
-function closeForm(){
+function renderCompanies() {
+    const container = document.getElementById('companies-list');
+    container.innerHTML = '';
+    
+    document.getElementById('count').textContent = companies.length;
 
-document.getElementById("form").classList.add("hidden")
+    companies.forEach(company => {
+        const card = document.createElement('div');
+        card.className = 'company-card';
+        
+        card.innerHTML = `
+            <div class="card-header">
+                <img src="${company.logo}" alt="${company.name}">
+            </div>
+            <div class="card-body">
+                <h3>${company.name}</h3>
+                <div class="role">${company.role}</div>
+                
+                <div class="info-row">
+                    <span class="info-label">Package</span>
+                    <span class="info-value">${company.package}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Location</span>
+                    <span class="info-value">${company.location}</span>
+                </div>
+                
+                <div class="cgpa-badge">Min CGPA: ${company.minCGPA}</div>
+                
+                <div class="card-actions">
+                    <button class="delete-btn" data-id="${company.id}">Delete</button>
+                    <button class="download-btn" data-id="${company.id}">Download</button>
+                </div>
+            </div>
+        `;
+        
+        container.appendChild(card);
+    });
 
+    // Attach event listeners
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const id = parseInt(e.target.dataset.id);
+            if (confirm('Delete this company?')) {
+                companies = companies.filter(c => c.id !== id);
+                saveCompanies();
+            }
+        });
+    });
+
+    document.querySelectorAll('.download-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const id = parseInt(e.target.dataset.id);
+            const company = companies.find(c => c.id === id);
+            if (!company) return;
+            
+            const dataStr = JSON.stringify(company, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const link = document.createElement('a');
+            link.setAttribute('href', dataUri);
+            link.setAttribute('download', `${company.name.toLowerCase().replace(/\s+/g, '-')}.json`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    });
 }
 
-
-function addCompany(){
-
-let name=document.getElementById("name").value
-let role=document.getElementById("role").value
-let packageValue=document.getElementById("package").value
-let location=document.getElementById("location").value
-let cgpa=document.getElementById("cgpa").value
-
-if(!name || !role || !packageValue || !location || !cgpa){
-
-alert("Please fill all fields")
-return
-
+// Modal controls
+function openModal() {
+    document.getElementById('add-modal').style.display = 'flex';
+    document.getElementById('company-form').reset();
 }
 
-let company={
-
-name:name,
-role:role,
-package:packageValue,
-location:location,
-cgpa:cgpa
-
+function closeModal() {
+    document.getElementById('add-modal').style.display = 'none';
 }
 
-
-// fake loading
-
-setTimeout(()=>{
-
-companies.push(company)
-
-renderCompanies()
-
-closeForm()
-
-showSuccess()
-
-document.getElementById("name").value=""
-document.getElementById("role").value=""
-document.getElementById("package").value=""
-document.getElementById("location").value=""
-document.getElementById("cgpa").value=""
-
-},700)
-
-}
-
-
-
-function renderCompanies(){
-
-let list=document.getElementById("companyList")
-
-list.innerHTML=""
-
-companies.forEach((c,i)=>{
-
-list.innerHTML+=`
-
-<div class="company">
-
-<h3>${c.name}</h3>
-
-<p><b>Role:</b> ${c.role}</p>
-<p><b>Package:</b> ${c.package}</p>
-<p><b>Location:</b> ${c.location}</p>
-<p><b>CGPA:</b> ${c.cgpa}</p>
-
-<button class="delete" onclick="deleteCompany(${i})">Delete</button>
-<button class="download" onclick="downloadCompany(${i})">Download</button>
-
-</div>
-
-`
-
-})
-
-}
-
-
-
-function deleteCompany(i){
-
-deleteIndex=i
-
-document.getElementById("deleteModal").classList.remove("hidden")
-
-}
-
-
-
-function closeDeleteModal(){
-
-document.getElementById("deleteModal").classList.add("hidden")
-
-}
-
-
-
-function confirmDelete(){
-
-companies.splice(deleteIndex,1)
-
-renderCompanies()
-
-closeDeleteModal()
-
-}
-
-
-
-function downloadCompany(i){
-
-const data=JSON.stringify(companies[i],null,2)
-
-const blob=new Blob([data])
-
-const a=document.createElement("a")
-
-a.href=URL.createObjectURL(blob)
-
-a.download=companies[i].name + ".json"
-
-a.click()
-
-}
-
-
-
-function searchCompany(){
-
-let search=document.getElementById("search").value.toLowerCase()
-
-let list=document.getElementById("companyList")
-
-list.innerHTML=""
-
-companies.forEach((c,i)=>{
-
-if(c.name.toLowerCase().includes(search)){
-
-list.innerHTML+=`
-
-<div class="company">
-
-<h3>${c.name}</h3>
-
-<p><b>Role:</b> ${c.role}</p>
-<p><b>Package:</b> ${c.package}</p>
-<p><b>Location:</b> ${c.location}</p>
-<p><b>CGPA:</b> ${c.cgpa}</p>
-
-<button class="delete" onclick="deleteCompany(${i})">Delete</button>
-<button class="download" onclick="downloadCompany(${i})">Download</button>
-
-</div>
-
-`
-
-}
-
-})
-
-}
-
-
-
-function showSuccess(){
-
-let toast=document.getElementById("successToast")
-
-toast.classList.remove("hidden")
-
-setTimeout(()=>{
-
-toast.classList.add("hidden")
-
-},2500)
-
-}
-
-
-
-renderCompanies()
+// Form submit
+document.getElementById('company-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const newCompany = {
+        id: Date.now(),
+        name: document.getElementById('name').value.trim(),
+        role: document.getElementById('role').value.trim(),
+        package: document.getElementById('package').value.trim(),
+        location: document.getElementById('location').value.trim(),
+        minCGPA: parseFloat(document.getElementById('min-cgpa').value),
+        logo: `https://picsum.photos/id/${100 + Math.floor(Math.random()*100)}/600/300`
+    };
+    
+    companies.unshift(newCompany); // add to top
+    saveCompanies();
+    closeModal();
+});
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', () => {
+    loadCompanies();
+    
+    document.getElementById('add-company-btn').addEventListener('click', openModal);
+    document.getElementById('close-modal').addEventListener('click', closeModal);
+    document.getElementById('cancel-btn').addEventListener('click', closeModal);
+    
+    // Close modal on outside click
+    document.getElementById('add-modal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('add-modal')) {
+            closeModal();
+        }
+    });
+});
