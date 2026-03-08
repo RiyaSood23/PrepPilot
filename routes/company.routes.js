@@ -1,5 +1,4 @@
 // Company routes - API endpoints for company operations
-<<<<<<< HEAD
 
 const express = require('express');
 const router = express.Router();
@@ -23,18 +22,3 @@ router.delete('/:id', deleteCompany);
 router.get('/download', downloadCompanies);
 
 module.exports = router;
-=======
-// TODO: Implement routes for GET, POST, PUT, DELETE operations
-const express = require("express");
-const router = express.Router();
-
-// Temporary route (Member 2 will implement logic later)
-router.get("/", (req, res) => {
-  res.json({
-    success: true,
-    message: "Companies route working"
-  });
-});
-
-module.exports = router;
->>>>>>> 05d1dcfa59be49dbc7dc1a9923b278838cbbda48
