@@ -14,13 +14,34 @@ const defaultCompanies = [ /* same as admin.js - duplicated for independence */
 ];
 
 function loadCompanies() {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-        companies = JSON.parse(saved);
-    } else {
-        companies = [...defaultCompanies];
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(companies));
-    }
+    // Try to load from API first, fall back to localStorage
+    fetch('/api/companies')
+        .then(response => response.json())
+        .then(result => {
+            if (result.success && result.data && result.data.length > 0) {
+                companies = result.data;
+            } else {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    companies = JSON.parse(saved);
+                } else {
+                    companies = [...defaultCompanies];
+                }
+            }
+            // Show the registration form or companies view if student exists
+            loadStudent();
+        })
+        .catch(error => {
+            console.warn('Could not load from API, using localStorage:', error);
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                companies = JSON.parse(saved);
+            } else {
+                companies = [...defaultCompanies];
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(companies));
+            }
+            loadStudent();
+        });
 }
 
 function loadStudent() {
@@ -108,7 +129,7 @@ function resetStudent() {
 }
 
 // Form handling
-document.getElementById('student-register-form').addEventListener('submit', function(e) {
+document.getElementById('student-register-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     
     const studentData = {
@@ -123,11 +144,30 @@ document.getElementById('student-register-form').addEventListener('submit', func
         return;
     }
     
-    saveStudent(studentData);
-    showCompaniesView();
+    try {
+        const response = await fetch('/api/students', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(studentData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            studentData.id = result.studentId;
+            saveStudent(studentData);
+            showCompaniesView();
+        } else {
+            alert('Registration failed: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error registering student:', error);
+        alert('Error registering student: ' + error.message);
+    }
 });
 
 document.addEventListener('DOMContentLoaded', () => {
     loadCompanies();
-    loadStudent();
 });

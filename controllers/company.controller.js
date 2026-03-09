@@ -75,7 +75,7 @@ const createCompany = async (req, res) => {
             id: generateId(companies),
             name: name.trim(),
             role: role.trim(),
-            minCgpa: parseFloat(minCgpa),
+            minCGPA: parseFloat(minCgpa),
             location: location.trim(),
             package: pkg.trim(),
             createdAt: new Date().toISOString()

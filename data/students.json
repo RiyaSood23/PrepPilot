@@ -29,5 +29,14 @@
       "Machine Learning"
     ],
     "cgpa": 8.5
+  },
+  {
+    "id": 4,
+    "name": "Aryan",
+    "branch": "ECE",
+    "skills": [
+      "Java"
+    ],
+    "cgpa": 8.5
   }
 ]

@@ -52,14 +52,33 @@ const defaultCompanies = [
 ];
 
 function loadCompanies() {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-        companies = JSON.parse(saved);
-    } else {
-        companies = [...defaultCompanies];
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(companies));
-    }
-    renderCompanies();
+    // Try to load from API first, fall back to localStorage
+    fetch('/api/companies')
+        .then(response => response.json())
+        .then(result => {
+            if (result.success && result.data && result.data.length > 0) {
+                companies = result.data;
+            } else {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    companies = JSON.parse(saved);
+                } else {
+                    companies = [...defaultCompanies];
+                }
+            }
+            renderCompanies();
+        })
+        .catch(error => {
+            console.warn('Could not load from API, using localStorage:', error);
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                companies = JSON.parse(saved);
+            } else {
+                companies = [...defaultCompanies];
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(companies));
+            }
+            renderCompanies();
+        });
 }
 
 function saveCompanies() {
@@ -111,8 +130,25 @@ function renderCompanies() {
         btn.addEventListener('click', (e) => {
             const id = parseInt(e.target.dataset.id);
             if (confirm('Delete this company?')) {
-                companies = companies.filter(c => c.id !== id);
-                saveCompanies();
+                fetch(`/api/companies/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        companies = companies.filter(c => c.id !== id);
+                        saveCompanies();
+                    } else {
+                        alert('Failed to delete company: ' + result.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting company:', error);
+                    alert('Error deleting company: ' + error.message);
+                });
             }
         });
     });
@@ -147,22 +183,40 @@ function closeModal() {
 }
 
 // Form submit
-document.getElementById('company-form').addEventListener('submit', function(e) {
+document.getElementById('company-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     
-    const newCompany = {
-        id: Date.now(),
+    const newCompanyData = {
         name: document.getElementById('name').value.trim(),
         role: document.getElementById('role').value.trim(),
         package: document.getElementById('package').value.trim(),
         location: document.getElementById('location').value.trim(),
-        minCGPA: parseFloat(document.getElementById('min-cgpa').value),
-        logo: `https://picsum.photos/id/${100 + Math.floor(Math.random()*100)}/600/300`
+        minCgpa: parseFloat(document.getElementById('min-cgpa').value)
     };
     
-    companies.unshift(newCompany); // add to top
-    saveCompanies();
-    closeModal();
+    try {
+        const response = await fetch('/api/companies', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newCompanyData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            const newCompany = result.data;
+            companies.unshift(newCompany);
+            saveCompanies();
+            closeModal();
+        } else {
+            alert('Failed to add company: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error adding company:', error);
+        alert('Error adding company: ' + error.message);
+    }
 });
 
 // Event listeners
