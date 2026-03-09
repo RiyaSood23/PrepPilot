@@ -1,12 +1,32 @@
 [
   {
-    "id": 1772735649007,
+    "id": 1,
     "name": "Alice Sharma",
     "branch": "CSE",
     "skills": [
       "JavaScript",
       "Node.js",
       "MongoDB"
+    ],
+    "cgpa": 8.5
+  },
+  {
+    "id": 2,
+    "name": "Riya Sood",
+    "branch": "Computer Science",
+    "skills": [
+      "JavaScript",
+      "Python",
+      "React"
+    ],
+    "cgpa": 8.5
+  },
+  {
+    "id": 3,
+    "name": "Meghna Rana",
+    "branch": "Computer Science",
+    "skills": [
+      "Machine Learning"
     ],
     "cgpa": 8.5
   }

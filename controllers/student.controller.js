@@ -56,7 +56,10 @@ exports.registerStudent = async (req, res) => {
 
     const students = await readJsonArray(studentsFile);
 
-    const studentId = Date.now();
+    // Generate sequential student ID
+    const studentId = students.length > 0
+      ? Math.max(...students.map(s => s.id)) + 1
+      : 1;
 
     const newStudent = {
       id: studentId,
