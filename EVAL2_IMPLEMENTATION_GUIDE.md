@@ -96,8 +96,6 @@ Eval-2 converts the prototype into a real system with database, authentication, 
 - Frontend integration: HTML/CSS/JS + Fetch API
 - Template engine: EJS
 
----
-
 ## 5) Proposed Data Models (MongoDB + Mongoose)
 
 These schemas are intentionally simple and sufficient for Eval-2.
