@@ -3,6 +3,12 @@
 **Placement & Company Tracking System**
 A full-stack web application for managing campus placement drives, tracking company requirements, and checking student eligibility.
 
+## Eval-2 Team Handoff
+
+For the full Eval-2 upgrade plan, team responsibilities, API/model design, and AI-agent prompts, read:
+
+- `EVAL2_IMPLEMENTATION_GUIDE.md`
+
 ---
 
 ## 🎯 Overview
