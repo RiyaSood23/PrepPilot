@@ -1,1 +1,31 @@
-[]
+[
+  {
+    "id": 1,
+    "name": "Riya Sood",
+    "branch": "Computer Science",
+    "skills": [
+      "JavaScript",
+      "Python",
+      "React"
+    ],
+    "cgpa": 8.5
+  },
+  {
+    "id": 2,
+    "name": "Meghna Rana",
+    "branch": "Computer Science",
+    "skills": [
+      "Machine Learning"
+    ],
+    "cgpa": 8.5
+  },
+  {
+    "id": 3,
+    "name": "Jia Papneja",
+    "branch": "Computer Science",
+    "skills": [
+      "Machine Learning"
+    ],
+    "cgpa": 8.5
+  }
+]

@@ -1,22 +1,43 @@
-# PrepPilot - Backend Project
+# PrepPilot
 
-**Team of 4 | First Evaluation: March 10, 2026**
+**Placement & Company Tracking System**
+A full-stack web application for managing campus placement drives, tracking company requirements, and checking student eligibility.
+
+---
+
+## 🎯 Overview
+
+PrepPilot is a comprehensive placement management system designed for colleges to streamline the placement process. It provides separate portals for administrators and students, with real-time eligibility checking based on company requirements.
+
+### Key Features
+
+- **Company Management**: Add, view, and delete recruiting companies with detailed information
+- **Student Registration**: Register students with their academic and skill profiles
+- **Eligibility Checker**: Instantly verify student eligibility for companies based on CGPA requirements
+- **Admin Dashboard**: Manage all placement-related data in one place
+- **Student Portal**: Students can register and check their eligibility for companies
+- **JSON File Storage**: Lightweight data persistence without database setup
+
+---
 
 ## 🚀 Quick Start
 
-1. Install dependencies:
+1. **Install dependencies:**
 
 ```bash
 npm install
 ```
 
-2. Start the server:
+2. **Start the server:**
 
 ```bash
 npm start
 ```
 
-3. Server will run on: http://localhost:5000
+3. **Access the application:**
+   - **Landing Page**: http://localhost:3000
+   - **Admin Portal**: http://localhost:3000/admin.html
+   - **Student Portal**: http://localhost:3000/student.html
 
 ---
 
@@ -25,65 +46,161 @@ npm start
 ```
 PrepPilot/
 │
-├── server.js                    # Main Express server
-├── package.json                 # Dependencies
-├── .gitignore                   # Git ignore rules
+├── server.js                    # Express server & API setup
+├── package.json                 # Dependencies & scripts
 │
-├── routes/                      # API routes
-│   ├── company.routes.js        # Company endpoints
-│   └── student.routes.js        # Student endpoints
+├── routes/                      # API route definitions
+│   ├── company.routes.js        # Company-related endpoints
+│   └── student.routes.js        # Student-related endpoints
 │
-├── controllers/                 # Business logic
-│   ├── company.controller.js    # Company operations
-│   └── student.controller.js    # Student operations
+├── controllers/                 # Business logic layer
+│   ├── company.controller.js    # Company CRUD operations
+│   └── student.controller.js    # Student registration & eligibility
 │
-├── data/                        # JSON storage
-│   ├── companies.json           # Company data []
-│   └── students.json            # Student data []
+├── data/                        # JSON-based data storage
+│   ├── companies.json           # Company records
+│   └── students.json            # Student records
 │
-└── public/                      # Frontend files
+└── public/                      # Frontend static files
     ├── index.html               # Landing page
     ├── admin.html               # Admin dashboard
     ├── student.html             # Student portal
-    ├── css/
-    │   └── styles.css           # Styles
-    └── js/
-        ├── admin.js             # Admin scripts
-        └── student.js           # Student scripts
+    ├── css/                     # Stylesheets
+    │   ├── index.css
+    │   ├── admin.css
+    │   ├── student.css
+    │   └── styles.css
+    └── js/                      # Client-side scripts
+        ├── admin.js
+        └── student.js
 ```
 
 ---
 
-## 👥 Team Division
+## 🔌 API Endpoints
 
-**Member 1:** Company routes and controller
-**Member 2:** Student routes and controller
-**Member 3:** Frontend (HTML/CSS/JS)
-**Member 4:** Data management and integration
+### Company Management
+
+| Method   | Endpoint                  | Description             |
+| -------- | ------------------------- | ----------------------- |
+| `GET`    | `/api/companies`          | Get all companies       |
+| `POST`   | `/api/companies`          | Add a new company       |
+| `DELETE` | `/api/companies/:id`      | Delete a company by ID  |
+| `GET`    | `/api/companies/download` | Download companies data |
+
+**Add Company Request Body:**
+
+```json
+{
+  "name": "Google",
+  "role": "Software Engineer",
+  "minCgpa": 7.5,
+  "location": "Bangalore",
+  "package": "25 LPA"
+}
+```
+
+### Student Management
+
+| Method | Endpoint                                    | Description            |
+| ------ | ------------------------------------------- | ---------------------- |
+| `POST` | `/api/students`                             | Register a new student |
+| `GET`  | `/api/students/check/:studentId/:companyId` | Check eligibility      |
+
+**Register Student Request Body:**
+
+```json
+{
+  "name": "Riya Sood",
+  "branch": "CSE",
+  "skills": ["JavaScript", "React", "Node.js"],
+  "cgpa": 8.5
+}
+```
 
 ---
 
-## 📝 Current Status
+## 🛠️ Technology Stack
 
-✅ Server runs successfully on port 5000
-✅ Express.json() middleware configured
-✅ Static file serving enabled
-✅ Clean folder structure ready
-
-⏳ All route/controller files are placeholders
-⏳ Frontend files need implementation
-⏳ JSON data files are empty arrays
+- **Backend**: Node.js, Express.js
+- **Frontend**: HTML5, CSS3, Vanilla JavaScript
+- **Storage**: JSON file-based persistence
+- **API**: RESTful architecture
 
 ---
 
-## 🎯 Next Steps
+## 💡 Usage
 
-1. Each team member implements their assigned files
-2. Connect routes to controllers
-3. Implement business logic
-4. Create frontend interfaces
-5. Test all endpoints
+### Admin Portal
+
+1. Navigate to `/admin.html`
+2. Add companies with role details, CGPA requirements, and package information
+3. View all registered companies in a table
+4. Delete companies as needed
+
+### Student Portal
+
+1. Navigate to `/student.html`
+2. Register with name, branch, skills, and CGPA
+3. Check eligibility for specific companies by providing student ID and company ID
+4. System automatically validates if student meets CGPA requirements
 
 ---
 
-**Good luck with the project! 🚀**
+## 📊 Data Models
+
+### Company
+
+```javascript
+{
+  id: Number,           // Auto-generated
+  name: String,         // Company name
+  role: String,         // Job role/position
+  minCgpa: Number,      // Minimum CGPA requirement (0-10)
+  location: String,     // Job location
+  package: String,      // Salary package offered
+  createdAt: String     // ISO timestamp
+}
+```
+
+### Student
+
+```javascript
+{
+  id: Number,           // Auto-generated
+  name: String,         // Student name
+  branch: String,       // Department/Branch
+  skills: Array,        // Array of skills
+  cgpa: Number          // Current CGPA (0-10)
+}
+```
+
+---
+
+## 🔒 Error Handling
+
+The application includes comprehensive error handling:
+
+- Input validation for all API requests
+- 404 handling for undefined routes
+- Global error middleware for server errors
+- Graceful file system error handling
+
+---
+
+## 📝 Notes
+
+- Evaluation scheduled for **March 10, 2026**
+- Port configured to `3000` (configurable via `PORT` environment variable)
+- Data persists in JSON files in the `/data` directory
+- No database setup required - ready to run out of the box
+
+---
+
+## 🤝 Contributing
+
+This is an academic project. For issues or improvements, please coordinate with the team.
+
+---
+
+**Built with ❤️ for streamlined campus placements**

@@ -5,4 +5,7 @@ node_modules/
 # Documentation and testing files (kept local only)
 COMPLETE_EXPLANATION_GUIDE.md
 COMPANY_API_TESTING.md
+COMPLETE_PROJECT_DOCUMENTATION.md
+EVAL_PREP.md
+*.pdf
 test_download.json

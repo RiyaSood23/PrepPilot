@@ -1,14 +1,96 @@
-<!-- Landing page for PrepPilot -->
-<!-- TODO: Add HTML structure and content -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>PrepPilot</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlaceTrack • Home</title>
+    <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">PrepPilot</div>
+            <div class="nav-links">
+                <a href="index.html" class="active">Home</a>
+                <a href="admin.html">Admin</a>
+                <a href="student.html">Student</a>
+            </div>
+        </div>
+    </nav>
 
-<h1>PrepPilot Backend Running 🚀</h1>
-<p>Server connected successfully.</p>
+    <header class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Placement &amp; Company<br>Tracking System</h1>
+            <p class="hero-desc">
+                Manage placement drives, track top companies, and instantly check student eligibility.<br>
+                Built for colleges who want zero hassle.
+            </p>
 
+            <div class="hero-buttons">
+                <a href="admin.html" class="btn-primary">Admin Portal</a>
+                <a href="student.html" class="btn-secondary">Student Portal</a>
+            </div>
+        </div>
+
+        <div class="hero-visual">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">142</div>
+                    <div class="stat-label">Companies Tracked</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">98%</div>
+                    <div class="stat-label">Eligibility Accuracy</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">4.9k</div>
+                    <div class="stat-label">Students Placed</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="tips-section">
+        <div class="section-header">
+            <h2>Placement Tips &amp; Facts</h2>
+            <p>Pro tips to help you succeed</p>
+        </div>
+
+        <div class="tips-grid">
+            <div class="tip-card">
+                <div class="tip-icon">📈</div>
+                <h3>CGPA Matters</h3>
+                <p>Students with CGPA ≥ 8.0 have 3.2× higher chance of getting offers above 30 LPA.</p>
+            </div>
+            <div class="tip-card">
+                <div class="tip-icon">💼</div>
+                <h3>Skill-First Hiring</h3>
+                <p>80% of MAANG companies now prioritize LeetCode + Projects over CGPA alone.</p>
+            </div>
+            <div class="tip-card">
+                <div class="tip-icon">🎯</div>
+                <h3>Start Early</h3>
+                <p>Pre-final year students who apply in July get 67% more interview calls.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>&copy; 2026 PrepPilot • All Rights Reserved </p>
+    </footer>
+
+    <script>
+        // Simple smooth scroll for future links
+        document.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                if (link.getAttribute('href').startsWith('#')) {
+                    e.preventDefault();
+                    document.querySelector(link.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
