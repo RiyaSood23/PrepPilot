@@ -1,19 +1,28 @@
 const express = require("express");
 const router = express.Router();
 
-const {
-  registerStudent,
-  checkEligibility
-} = require("../controllers/student.controller");
+const auth = require("../middlewares/auth");
+const role = require("../middlewares/role");
 
-// Base path (in server.js): /api/students
+// REGISTER (public)
+router.post("/register", (req, res) => {
+  res.send("Student register");
+});
 
-// Register student
-// POST /api/students
-router.post("/", registerStudent);
+// LOGIN (public)
+router.post("/login", (req, res) => {
+  res.send("Student login");
+});
 
-// Check eligibility
-// GET /api/students/check/:studentId/:companyId
-router.get("/check/:studentId/:companyId", checkEligibility);
+// APPLY (student only)
+const { applyCompany } = require("../controllers/student.controller");
+
+router.post("/apply", auth, role("student"), applyCompany);
+
+// PROFILE (logged-in users)
+router.get("/profile", auth, (req, res) => {
+  res.send("Student profile");
+});
+
 
 module.exports = router;
