@@ -23,6 +23,9 @@ app.get("/", (req, res) => {
   res.send("PrepPilot Server Running");
 });
 
+const authRoutes = require("./routes/auth.routes");
+app.use("/api/auth", authRoutes);
+
 // 404 Handler
 app.use((req, res) => {
   res.status(404).json({
@@ -45,6 +48,3 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
-const authRoutes = require("./routes/auth.routes");
-app.use("/api/auth", authRoutes);
