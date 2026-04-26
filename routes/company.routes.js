@@ -1,5 +1,4 @@
 // Company routes - API endpoints for company operations
-
 const express = require('express');
 const router = express.Router();
 const {
