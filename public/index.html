@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PlaceTrack • Home</title>
+    <title>PrepPilot • Home</title>
     <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
@@ -90,6 +90,21 @@
                     });
                 }
             });
+        });
+    </script>
+
+    
+    <script>
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (user && user.role) {
+                if (user.role === 'admin') {
+                    window.location.href = 'admin.html';
+                } else if (user.role === 'student') {
+                    window.location.href = 'student.html';
+                }
+            }
         });
     </script>
 </body>
