@@ -1,9 +1,10 @@
 const express = require("express");
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Import Routes
+const connectDB = require('./config/db');
 const companyRoutes = require("./routes/company.routes");
 const studentRoutes = require("./routes/student.routes");
 
@@ -39,6 +40,11 @@ app.use((err, req, res, next) => {
 });
 
 // Start Server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+const startServer = async () => {
+  await connectDB();
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+};
+
+startServer();
