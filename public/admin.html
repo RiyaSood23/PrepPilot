@@ -6,68 +6,29 @@
     <title>PrepPilot • Admin Portal</title>
     <link rel="stylesheet" href="css/admin.css">
 </head>
+
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <div onclick="window.location.href='index.html'" class="logo">PrepPilot</div>
+            <div onclick="goHome()" class="logo">PrepPilot</div>
+
             <div class="nav-links">
-                <a href="index.html">Home</a>
+                <a href="#" onclick="goHome()">Home</a>
                 <a href="admin.html" class="active">Admin</a>
                 <a href="student.html">Student</a>
-                <a href="#" onclick="logout()" style="color: #ef4444; font-weight: bold;">Logout</a>
+                <a href="#" onclick="logout()">Logout</a>
             </div>
         </div>
     </nav>
 
     <div class="dashboard-container">
-        <header class="dashboard-header">
+        <div class="view-header">
             <div>
                 <h1>Admin Dashboard</h1>
                 <p>Manage placement companies • Real-time tracking</p>
             </div>
-            <button id="add-company-btn" class="add-btn">
-                <span>+</span> Add Company
-            </button>
-        </header>
 
-        <!-- Modal -->
-        <div id="add-modal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Add New Company</h2>
-                    <button id="close-modal" class="close-btn">✕</button>
-                </div>
-
-                <form id="company-form">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Company Name</label>
-                            <input type="text" id="name" required placeholder="e.g. Google">
-                        </div>
-                        <div class="form-group">
-                            <label>Role</label>
-                            <input type="text" id="role" required placeholder="e.g. Software Engineer">
-                        </div>
-                        <div class="form-group">
-                            <label>Package / Stipend</label>
-                            <input type="text" id="package" required placeholder="e.g. 45 LPA">
-                        </div>
-                        <div class="form-group">
-                            <label>Location</label>
-                            <input type="text" id="location" required placeholder="e.g. Bangalore">
-                        </div>
-                        <div class="form-group full">
-                            <label>Minimum CGPA</label>
-                            <input type="number" id="min-cgpa" step="0.1" min="0" max="10" required placeholder="8.0">
-                        </div>
-                    </div>
-
-                    <div class="modal-actions">
-                        <button type="button" id="cancel-btn" class="cancel-btn">Cancel</button>
-                        <button type="submit" class="submit-btn">Add Company</button>
-                    </div>
-                </form>
-            </div>
+            <button id="add-company-btn" class="new-reg-btn">+ Add Company</button>
         </div>
 
         <div class="companies-section">
@@ -75,22 +36,63 @@
                 <h2>Company Catalog <span id="count">0</span></h2>
             </div>
 
-            <div id="companies-list" class="companies-grid">
-                <!-- Populated by JS -->
+            <div id="companies-list" class="companies-grid"></div>
+        </div>
+    </div>
+
+    <div id="add-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Company</h2>
+                <button class="close-btn" onclick="closeModal()">✕</button>
             </div>
+
+            <form id="company-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Company Name</label>
+                        <input type="text" id="name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Role</label>
+                        <input type="text" id="role" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Package</label>
+                        <input type="text" id="package" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Location</label>
+                        <input type="text" id="location" required>
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Min CGPA</label>
+                        <input type="number" id="min-cgpa" step="0.1" required>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="submit-btn">Add Company</button>
+                </div>
+            </form>
         </div>
     </div>
 
     <script src="js/admin.js"></script>
 
-    <!-- Logout Function -->
     <script>
         function logout() {
-            if (confirm("Do you want to logout?")) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-                window.location.href = 'login.html';
-            }
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        function goHome() {
+            window.location.href = "index.html";
         }
     </script>
 </body>

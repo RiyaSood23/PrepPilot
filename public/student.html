@@ -9,82 +9,31 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <div onclick="window.location.href='index.html'" class="logo">PrepPilot</div>
+            <div onclick="goHome()" class="logo">PrepPilot</div>
             <div class="nav-links">
-                <a href="index.html">Home</a>
+                <a href="#" onclick="goHome()">Home</a>
                 <a href="admin.html">Admin</a>
                 <a href="student.html" class="active">Student</a>
-                <a href="#" onclick="logout()" style="color: #ef4444; font-weight: bold;">Logout</a>
+                <a href="#" onclick="logout()">Logout</a>
             </div>
         </div>
     </nav>
 
     <div class="student-container">
-        <!-- Registration Form -->
-        <div id="registration-form" class="registration-box">
-            <div class="form-header">
-                <h1>Student Registration</h1>
-                <p>Register to see your eligible companies</p>
+        <div class="view-header">
+            <div>
+                <h1>Welcome, <span id="student-name">Student</span></h1>
             </div>
-
-            <form id="student-register-form">
-                <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" id="s-name" required placeholder="Aarav Sharma">
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Branch</label>
-                        <input type="text" id="s-branch" required placeholder="Computer Science">
-                    </div>
-                    <div class="form-group">
-                        <label>CGPA</label>
-                        <input type="number" id="s-cgpa" step="0.01" min="0" max="10" required placeholder="8.45">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Skills (comma separated)</label>
-                    <input type="text" id="s-skills" required placeholder="Python, DSA, React, Machine Learning">
-                </div>
-
-                <button type="submit" class="register-btn">Register &amp; View Companies</button>
-            </form>
+            <button onclick="resetStudent()" class="new-reg-btn">New Registration</button>
         </div>
 
-        <!-- Companies View -->
-        <div id="companies-view" class="companies-view" style="display: none;">
-            <div class="view-header">
-                <div>
-                    <h1>Welcome, <span id="student-name"></span></h1>
-                    <p id="student-info"></p>
-                </div>
-                <button onclick="resetStudent()" class="new-reg-btn">New Registration</button>
-            </div>
-
-            <div class="eligibility-note">
-                <span class="green-dot"></span>
-                Green = Eligible  <span class="red-dot"></span> Red = Not Eligible
-            </div>
-
-            <div id="student-companies-list" class="companies-grid">
-                <!-- Populated by JS -->
-            </div>
+        <div class="eligibility-note">
+            <span class="green-dot"></span> Eligible  <span class="red-dot"></span> Not Eligible
         </div>
+
+        <div id="student-companies-list" class="companies-grid"></div>
     </div>
 
     <script src="js/student.js"></script>
-
-    <!-- Logout Function -->
-    <script>
-        function logout() {
-            if (confirm("Do you want to logout?")) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-                window.location.href = 'login.html';
-            }
-        }
-    </script>
 </body>
 </html>
