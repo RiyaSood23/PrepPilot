@@ -1,3 +1,6 @@
+const connectDB = require("./config/db");
+connectDB();
+
 const express = require("express");
 require('dotenv').config();
 
@@ -20,6 +23,9 @@ app.use("/api/students", studentRoutes);
 app.get("/", (req, res) => {
   res.send("PrepPilot Server Running");
 });
+
+const authRoutes = require("./routes/auth.routes");
+app.use("/api/auth", authRoutes);
 
 // 404 Handler
 app.use((req, res) => {
