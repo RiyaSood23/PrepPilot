@@ -1,211 +1,245 @@
 # PrepPilot
 
 **Placement & Company Tracking System**
-A full-stack web application for managing campus placement drives, tracking company requirements, and checking student eligibility.
 
-## Eval-2 Team Handoff
-
-For the full Eval-2 upgrade plan, team responsibilities, API/model design, and AI-agent prompts, read:
-
-- `EVAL2_IMPLEMENTATION_GUIDE.md`
+PrepPilot is a full-stack web application for managing campus placement drives, tracking company requirements, checking student eligibility, and handling job applications. The current codebase uses Node.js, Express, MongoDB, Mongoose, bcrypt, and JWT.
 
 ---
 
-## 🎯 Overview
+## Overview
 
-PrepPilot is a comprehensive placement management system designed for colleges to streamline the placement process. It provides separate portals for administrators and students, with real-time eligibility checking based on company requirements.
+PrepPilot provides separate workflows for admins and students:
 
-### Key Features
-
-- **Company Management**: Add, view, and delete recruiting companies with detailed information
-- **Student Registration**: Register students with their academic and skill profiles
-- **Eligibility Checker**: Instantly verify student eligibility for companies based on CGPA requirements
-- **Admin Dashboard**: Manage all placement-related data in one place
-- **Student Portal**: Students can register and check their eligibility for companies
-- **JSON File Storage**: Lightweight data persistence without database setup
+- Admins can add, view, delete, and download companies.
+- Students can register, login, check eligibility, and apply to eligible companies.
+- The backend stores data in MongoDB instead of JSON files.
+- Passwords are hashed with bcrypt and protected routes use JWT authentication.
 
 ---
 
-## 🚀 Quick Start
+## Key Features
 
-1. **Install dependencies:**
+- MongoDB-backed company, student, user, and application models
+- Company management with openings and applied count tracking
+- Student application workflow with duplicate prevention
+- Eligibility checks based on CGPA and skills
+- Static frontend built with HTML, CSS, and vanilla JavaScript
+- Centralized Express error handling
+
+---
+
+## Tech Stack
+
+### Backend
+
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
+- bcrypt
+- jsonwebtoken
+- dotenv
+
+### Frontend
+
+- HTML5
+- CSS3
+- Vanilla JavaScript
+- Fetch API
+
+---
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js installed
+- MongoDB running locally or a MongoDB Atlas URI
+
+### Setup
+
+1. Install dependencies:
 
 ```bash
 npm install
 ```
 
-2. **Start the server:**
+2. Create a `.env` file in the project root:
+
+```env
+PORT=3000
+MONGODB_URI=mongodb://127.0.0.1:27017/preppilot
+SECRET_KEY=your_super_secret_jwt_key_here
+```
+
+3. Start the server:
 
 ```bash
 npm start
 ```
 
-3. **Access the application:**
-   - **Landing Page**: http://localhost:3000
-   - **Admin Portal**: http://localhost:3000/admin.html
-   - **Student Portal**: http://localhost:3000/student.html
+4. Open the app:
+
+- Home: http://localhost:3000
+- Login: http://localhost:3000/login.html
+- Admin: http://localhost:3000/admin.html
+- Student: http://localhost:3000/student.html
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
-```
+```text
 PrepPilot/
-│
-├── server.js                    # Express server & API setup
-├── package.json                 # Dependencies & scripts
-│
-├── routes/                      # API route definitions
-│   ├── company.routes.js        # Company-related endpoints
-│   └── student.routes.js        # Student-related endpoints
-│
-├── controllers/                 # Business logic layer
-│   ├── company.controller.js    # Company CRUD operations
-│   └── student.controller.js    # Student registration & eligibility
-│
-├── data/                        # JSON-based data storage
-│   ├── companies.json           # Company records
-│   └── students.json            # Student records
-│
-└── public/                      # Frontend static files
-    ├── index.html               # Landing page
-    ├── admin.html               # Admin dashboard
-    ├── student.html             # Student portal
-    ├── css/                     # Stylesheets
-    │   ├── index.css
-    │   ├── admin.css
-    │   ├── student.css
-    │   └── styles.css
-    └── js/                      # Client-side scripts
-        ├── admin.js
-        └── student.js
+├── server.js
+├── package.json
+├── .env.example
+├── config/
+│   └── db.js
+├── controllers/
+│   ├── auth.controller.js
+│   ├── company.controller.js
+│   ├── student.controller.js
+│   └── application.controller.js
+├── middlewares/
+│   ├── auth.js
+│   ├── role.js
+│   └── logger.js
+├── models/
+│   ├── company.model.js
+│   ├── company.js
+│   ├── student.js
+│   ├── application.js
+│   └── user.js
+├── routes/
+│   ├── auth.routes.js
+│   ├── company.routes.js
+│   └── student.routes.js
+├── public/
+│   ├── index.html
+│   ├── login.html
+│   ├── admin.html
+│   ├── student.html
+│   ├── css/
+│   └── js/
+└── data/
+    ├── companies.json
+    └── students.json
 ```
 
 ---
 
-## 🔌 API Endpoints
+## How It Works
 
-### Company Management
+1. `server.js` loads environment variables and connects to MongoDB.
+2. Express serves static frontend files from `public/`.
+3. API routes are mounted for auth, students, and companies.
+4. Controllers handle validation, business logic, and database queries.
+5. Middleware checks authentication and role before protected actions.
+6. Responses are returned as JSON with clear status codes.
+
+---
+
+## API Endpoints
+
+### Auth
+
+| Method | Endpoint             | Description     |
+| ------ | -------------------- | --------------- |
+| `POST` | `/api/auth/register` | Register a user |
+| `POST` | `/api/auth/login`    | Login a user    |
+
+### Students
+
+| Method | Endpoint                                    | Description               |
+| ------ | ------------------------------------------- | ------------------------- |
+| `POST` | `/api/students/register`                    | Register a student        |
+| `POST` | `/api/students/login`                       | Login a student           |
+| `GET`  | `/api/students/eligibility`                 | Check company eligibility |
+| `POST` | `/api/students/apply`                       | Apply to a company        |
+| `GET`  | `/api/students/applications`                | Get student applications  |
+| `GET`  | `/api/students/applications/:applicationId` | Get a single application  |
+
+### Companies
 
 | Method   | Endpoint                  | Description             |
 | -------- | ------------------------- | ----------------------- |
 | `GET`    | `/api/companies`          | Get all companies       |
-| `POST`   | `/api/companies`          | Add a new company       |
-| `DELETE` | `/api/companies/:id`      | Delete a company by ID  |
+| `POST`   | `/api/companies`          | Add a company           |
+| `DELETE` | `/api/companies/:id`      | Delete a company        |
 | `GET`    | `/api/companies/download` | Download companies data |
 
-**Add Company Request Body:**
+For protected routes, send the JWT token in the Authorization header:
 
-```json
-{
-  "name": "Google",
-  "role": "Software Engineer",
-  "minCgpa": 7.5,
-  "location": "Bangalore",
-  "package": "25 LPA"
-}
-```
-
-### Student Management
-
-| Method | Endpoint                                    | Description            |
-| ------ | ------------------------------------------- | ---------------------- |
-| `POST` | `/api/students`                             | Register a new student |
-| `GET`  | `/api/students/check/:studentId/:companyId` | Check eligibility      |
-
-**Register Student Request Body:**
-
-```json
-{
-  "name": "Riya Sood",
-  "branch": "CSE",
-  "skills": ["JavaScript", "React", "Node.js"],
-  "cgpa": 8.5
-}
+```text
+Authorization: Bearer <token>
 ```
 
 ---
 
-## 🛠️ Technology Stack
-
-- **Backend**: Node.js, Express.js
-- **Frontend**: HTML5, CSS3, Vanilla JavaScript
-- **Storage**: JSON file-based persistence
-- **API**: RESTful architecture
-
----
-
-## 💡 Usage
-
-### Admin Portal
-
-1. Navigate to `/admin.html`
-2. Add companies with role details, CGPA requirements, and package information
-3. View all registered companies in a table
-4. Delete companies as needed
-
-### Student Portal
-
-1. Navigate to `/student.html`
-2. Register with name, branch, skills, and CGPA
-3. Check eligibility for specific companies by providing student ID and company ID
-4. System automatically validates if student meets CGPA requirements
-
----
-
-## 📊 Data Models
+## Main Data Models
 
 ### Company
 
-```javascript
-{
-  id: Number,           // Auto-generated
-  name: String,         // Company name
-  role: String,         // Job role/position
-  minCgpa: Number,      // Minimum CGPA requirement (0-10)
-  location: String,     // Job location
-  package: String,      // Salary package offered
-  createdAt: String     // ISO timestamp
-}
-```
+- `name`
+- `role`
+- `minCgpa`
+- `location`
+- `package`
+- `openings`
+- `appliedCount`
 
 ### Student
 
-```javascript
-{
-  id: Number,           // Auto-generated
-  name: String,         // Student name
-  branch: String,       // Department/Branch
-  skills: Array,        // Array of skills
-  cgpa: Number          // Current CGPA (0-10)
-}
-```
+- `name`
+- `email`
+- `password`
+- `cgpa`
+- `skills`
+- `role`
+
+### Application
+
+- `student`
+- `job`
+- `status`
+- `appliedAt`
 
 ---
 
-## 🔒 Error Handling
+## Usage Flow
 
-The application includes comprehensive error handling:
+### Admin
 
-- Input validation for all API requests
-- 404 handling for undefined routes
-- Global error middleware for server errors
-- Graceful file system error handling
+1. Open `login.html` and choose the Admin tab.
+2. Login and go to the admin dashboard.
+3. Add or delete companies.
+4. View company cards with openings and applied counts.
+
+### Student
+
+1. Open `login.html` and choose the Student tab.
+2. Register or login.
+3. View companies and eligibility state.
+4. Apply only to eligible companies.
+5. View submitted applications.
 
 ---
 
-## 📝 Notes
+## Notes
 
-- Evaluation scheduled for **March 10, 2026**
-- Port configured to `3000` (configurable via `PORT` environment variable)
-- Data persists in JSON files in the `/data` directory
-- No database setup required - ready to run out of the box
+- The project now uses MongoDB rather than JSON file storage for core data.
+- JWT and bcrypt are used for authentication security.
+- Frontend is static and communicates with the backend through fetch requests.
 
 ---
 
-## 🤝 Contributing
+## Team
 
-This is an academic project. For issues or improvements, please coordinate with the team.
+- Riya: Database connection, company model, company controllers
+- Joy: Authentication middleware, JWT, role guards
+- Meghna: Student and application flow
+- Jia: Frontend pages and integration
 
 ---
 
