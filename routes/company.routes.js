@@ -1,23 +1,24 @@
 // Company routes - API endpoints for company operations
-const express = require('express');
+
+const express = require("express");
 const router = express.Router();
-const {
-    getAllCompanies,
-    createCompany,
-    deleteCompany,
-    downloadCompanies
-} = require('../controllers/company.controller');
 
-// GET /api/companies - Get all companies
-router.get('/', getAllCompanies);
+const auth = require("../middlewares/auth");
+const role = require("../middlewares/role");
 
-// POST /api/companies - Add a new company
-router.post('/', createCompany);
+// GET ALL COMPANIES (logged-in users)
+router.get("/", auth, (req, res) => {
+  res.send("Get companies (logged in)");
+});
 
-// DELETE /api/companies/:id - Delete a company by ID
-router.delete('/:id', deleteCompany);
+// ADD COMPANY (admin only)
+router.post("/", auth, role("admin"), (req, res) => {
+  res.send("Add company (admin only)");
+});
 
-// GET /api/companies/download - Download companies data as JSON file
-router.get('/download', downloadCompanies);
+// DELETE COMPANY (admin only)
+router.delete("/:id", auth, role("admin"), (req, res) => {
+  res.send("Delete company (admin only)");
+});
 
 module.exports = router;
