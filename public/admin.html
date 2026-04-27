@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PlaceTrack • Admin Portal</title>
+    <title>PrepPilot • Admin Portal</title>
     <link rel="stylesheet" href="css/admin.css">
 </head>
-
 <body>
     <nav class="navbar">
         <div class="nav-container">
@@ -15,6 +14,7 @@
                 <a href="index.html">Home</a>
                 <a href="admin.html" class="active">Admin</a>
                 <a href="student.html">Student</a>
+                <a href="#" onclick="logout()" style="color: #ef4444; font-weight: bold;">Logout</a>
             </div>
         </div>
     </nav>
@@ -82,6 +82,16 @@
     </div>
 
     <script src="js/admin.js"></script>
-</body>
 
+    <!-- Logout Function -->
+    <script>
+        function logout() {
+            if (confirm("Do you want to logout?")) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
 </html>

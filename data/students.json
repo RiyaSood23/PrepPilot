@@ -27,5 +27,23 @@
       "Machine Learning"
     ],
     "cgpa": 8.5
+  },
+  {
+    "id": 4,
+    "name": "jiya",
+    "branch": "computer science",
+    "skills": [
+      "c++"
+    ],
+    "cgpa": 8
+  },
+  {
+    "id": 5,
+    "name": "jiya",
+    "branch": "computer science",
+    "skills": [
+      "c++"
+    ],
+    "cgpa": 8
   }
 ]

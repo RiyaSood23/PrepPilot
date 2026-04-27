@@ -1,58 +1,115 @@
-// js/student.js
-let companies = [];
+// public/js/student.js - Updated for Eval-2 (Backend Connected)
+
+const API_BASE = "http://localhost:3000";
+const token = localStorage.getItem('token');
+const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+// Protect Student Page
+if (!token || user.role !== 'student') {
+    alert("Access Denied! Please login as Student.");
+    window.location.href = 'login.html';
+}
+
 let currentStudent = null;
 
-const STORAGE_KEY = 'placeTrackCompanies';
-const STUDENT_KEY = 'placeTrackCurrentStudent';
+// Helper API function
+async function apiRequest(endpoint, options = {}) {
+    try {
+        const response = await fetch(`${API_BASE}${endpoint}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                ...(token && { 'Authorization': `Bearer ${token}` })
+            },
+            ...options
+        });
 
-const defaultCompanies = [ /* same as admin.js - duplicated for independence */
-    { id:1, name:"Google", role:"Software Engineer", package:"45 LPA", location:"Bangalore", minCGPA:8.0, logo:"https://picsum.photos/id/1015/600/300" },
-    { id:2, name:"Microsoft", role:"Product Manager", package:"40 LPA", location:"Hyderabad", minCGPA:7.5, logo:"https://picsum.photos/id/102/600/300" },
-    { id:3, name:"Amazon", role:"SDE - 1", package:"35 LPA", location:"Chennai", minCGPA:7.0, logo:"https://picsum.photos/id/1033/600/300" },
-    { id:4, name:"Deloitte", role:"Consultant", package:"12 LPA", location:"Mumbai", minCGPA:6.5, logo:"https://picsum.photos/id/1040/600/300" },
-    { id:5, name:"TCS", role:"Systems Engineer", package:"7 LPA", location:"Delhi", minCGPA:6.0, logo:"https://picsum.photos/id/106/600/300" }
-];
-
-function loadCompanies() {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-        companies = JSON.parse(saved);
-    } else {
-        companies = [...defaultCompanies];
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(companies));
+        if (!response.ok) {
+            const err = await response.json().catch(() => ({}));
+            throw new Error(err.message || 'Request failed');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error(error);
+        throw error;
     }
 }
 
-function loadStudent() {
-    const savedStudent = localStorage.getItem(STUDENT_KEY);
-    if (savedStudent) {
-        currentStudent = JSON.parse(savedStudent);
+// Load Companies from Backend
+async function loadCompanies() {
+    try {
+        const data = await apiRequest('/api/companies');
+        renderStudentCompanies(data.data || data.companies || data);
+    } catch (err) {
+        console.error(err);
+        alert("Failed to load companies. Backend may not be running.");
+    }
+}
+
+// Student Registration (Send to Backend)
+async function registerStudent(e) {
+    e.preventDefault();
+
+    const studentData = {
+        name: document.getElementById('s-name').value.trim(),
+        branch: document.getElementById('s-branch').value.trim(),
+        cgpa: parseFloat(document.getElementById('s-cgpa').value),
+        skills: document.getElementById('s-skills').value.split(',').map(s => s.trim())
+    };
+
+    if (!studentData.name || !studentData.branch || isNaN(studentData.cgpa)) {
+        alert("Please fill all fields correctly");
+        return;
+    }
+
+    try {
+        const data = await apiRequest('/api/students', {
+            method: 'POST',
+            body: JSON.stringify(studentData)
+        });
+
+        currentStudent = { ...studentData, _id: data.student?._id || Date.now() };
+        alert("✅ Registration successful!");
         showCompaniesView();
-    } else {
-        showRegistrationForm();
+    } catch (err) {
+        alert("Registration failed. Please try again.");
     }
 }
 
-function saveStudent(student) {
-    currentStudent = student;
-    localStorage.setItem(STUDENT_KEY, JSON.stringify(student));
+// Apply to Company
+async function applyToCompany(companyId) {
+    if (!confirm("Do you want to apply to this company?")) return;
+
+    try {
+        const data = await apiRequest('/api/applications', {
+            method: 'POST',
+            body: JSON.stringify({ companyId })
+        });
+
+        alert(data.message || "✅ Application submitted successfully!");
+        loadCompanies(); // refresh list
+    } catch (err) {
+        alert(err.message || "Failed to apply. You may not be eligible or already applied.");
+    }
 }
 
-function renderStudentCompanies() {
+// Render Companies with Eligibility + Apply Button
+function renderStudentCompanies(companies) {
     const container = document.getElementById('student-companies-list');
+    if (!container) return;
+
     container.innerHTML = '';
 
     companies.forEach(company => {
-        const isEligible = currentStudent.cgpa >= company.minCGPA;
-        
+        const isEligible = currentStudent && currentStudent.cgpa >= (company.minCgpa || company.cgpa || 0);
+
         const card = document.createElement('div');
         card.className = `company-card ${isEligible ? 'eligible' : 'not-eligible'}`;
-        
+
         card.innerHTML = `
             <div class="card-header">
-                <img src="${company.logo}" alt="${company.name}">
+                <img src="https://picsum.photos/id/${100 + Math.floor(Math.random()*100)}/600/300" alt="${company.name}">
                 <div class="status-badge ${isEligible ? 'status-eligible' : 'status-not'}">
-                    ${isEligible ? 'Eligible' : 'Not Eligible'}
+                    ${isEligible ? '✅ Eligible' : '❌ Not Eligible'}
                 </div>
             </div>
             <div class="card-body">
@@ -61,7 +118,7 @@ function renderStudentCompanies() {
                 
                 <div class="info-row">
                     <span class="info-label">Package</span>
-                    <span class="info-value">${company.package}</span>
+                    <span class="info-value">${company.package || company.salary || 'N/A'}</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Location</span>
@@ -69,15 +126,21 @@ function renderStudentCompanies() {
                 </div>
                 <div class="info-row">
                     <span class="info-label">Required CGPA</span>
-                    <span class="info-value">${company.minCGPA}</span>
+                    <span class="info-value">${company.minCgpa || company.cgpa || 'N/A'}</span>
                 </div>
                 
-                <div style="margin-top:20px; font-size:0.95rem; color:#888;">
+                ${currentStudent ? `
+                <div style="margin-top:15px; font-size:0.95rem; color:#888;">
                     Your CGPA: <strong>${currentStudent.cgpa}</strong>
-                </div>
+                </div>` : ''}
+
+                <button onclick="applyToCompany('${company._id || company.id}')" 
+                        class="apply-btn ${isEligible ? '' : 'disabled'}"
+                        ${isEligible ? '' : 'disabled'}>
+                    ${isEligible ? 'Apply Now' : 'Not Eligible'}
+                </button>
             </div>
         `;
-        
         container.appendChild(card);
     });
 }
@@ -90,44 +153,32 @@ function showRegistrationForm() {
 function showCompaniesView() {
     document.getElementById('registration-form').style.display = 'none';
     document.getElementById('companies-view').style.display = 'block';
-    
-    document.getElementById('student-name').textContent = currentStudent.name.split(' ')[0];
-    document.getElementById('student-info').innerHTML = `
-        ${currentStudent.branch} • CGPA ${currentStudent.cgpa} • ${currentStudent.skills}
-    `;
-    
-    renderStudentCompanies();
+
+    if (currentStudent) {
+        document.getElementById('student-name').textContent = currentStudent.name.split(' ')[0];
+        document.getElementById('student-info').innerHTML = `
+            ${currentStudent.branch} • CGPA ${currentStudent.cgpa}
+        `;
+    }
+
+    loadCompanies();
 }
 
 function resetStudent() {
     if (confirm('Start a new registration?')) {
-        localStorage.removeItem(STUDENT_KEY);
         currentStudent = null;
         showRegistrationForm();
     }
 }
 
-// Form handling
-document.getElementById('student-register-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const studentData = {
-        name: document.getElementById('s-name').value.trim(),
-        branch: document.getElementById('s-branch').value.trim(),
-        cgpa: parseFloat(document.getElementById('s-cgpa').value),
-        skills: document.getElementById('s-skills').value.trim()
-    };
-    
-    if (!studentData.name || !studentData.branch || isNaN(studentData.cgpa)) {
-        alert("Please fill all fields correctly");
-        return;
-    }
-    
-    saveStudent(studentData);
-    showCompaniesView();
-});
-
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    loadCompanies();
-    loadStudent();
+    // Attach registration form
+    const registerForm = document.getElementById('student-register-form');
+    if (registerForm) {
+        registerForm.addEventListener('submit', registerStudent);
+    }
+
+    // If student is already registered (optional - for future)
+    showRegistrationForm();   // Start with registration form
 });

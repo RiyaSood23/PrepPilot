@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrepPilot • Login</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        body { background: linear-gradient(135deg, #0a0a0a, #1a1a2e); min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'Segoe UI', sans-serif; }
+        .login-box {
+            background: rgba(255,255,255,0.08); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px; padding: 50px 40px; width: 100%; max-width: 400px; text-align: center;
+        }
+        .logo { font-size: 48px; font-weight: 900; background: linear-gradient(#22c55e, #86efac); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+        input { width: 100%; padding: 14px; margin: 12px 0; background: #1f1f1f; border: 1px solid #444; border-radius: 10px; color: white; }
+        button { width: 100%; padding: 16px; background: #22c55e; color: black; border: none; border-radius: 10px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 10px; }
+        button:hover { background: #4ade80; }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <div class="logo">PrepPilot</div>
+        <h2>Login to Continue</h2>
+        
+        <input type="email" id="email" placeholder="Email" value="admin@college.edu">
+        <input type="password" id="password" placeholder="Password" value="admin123">
+        
+        <button onclick="handleLogin()">Login</button>
+        
+        <p style="margin-top:20px; color:#888; font-size:0.9rem;">
+            Demo:<br>
+            Admin → admin@college.edu / admin123<br>
+            Student → student@college.edu / student123
+        </p>
+    </div>
+
+    <script>
+    async function handleLogin() {
+        const email = document.getElementById('email').value.trim();
+        
+        let role = "student";
+        if (email.includes("admin")) role = "admin";
+
+        // Temporary hardcoded login for testing
+        const fakeUser = {
+            email: email,
+            role: role,
+            name: email.split('@')[0]
+        };
+
+        localStorage.setItem('token', 'fake-jwt-token-' + Date.now());
+        localStorage.setItem('user', JSON.stringify(fakeUser));
+
+        alert(`✅ Login Successful as ${role.toUpperCase()}!`);
+        
+        if (role === 'admin') {
+            window.location.href = 'admin.html';
+        } else {
+            window.location.href = 'student.html';
+        }
+    }
+</script>
+</body>
+</html>
