@@ -6,6 +6,7 @@
     <title>PrepPilot • Home</title>
     <link rel="stylesheet" href="css/index.css">
 </head>
+
 <body>
     <nav class="navbar">
         <div class="nav-container">
@@ -21,6 +22,7 @@
     <header class="hero">
         <div class="hero-content">
             <h1 class="hero-title">Placement &amp; Company<br>Tracking System</h1>
+
             <p class="hero-desc">
                 Manage placement drives, track top companies, and instantly check student eligibility.<br>
                 Built for colleges who want zero hassle.
@@ -38,10 +40,12 @@
                     <div class="stat-number">142</div>
                     <div class="stat-label">Companies Tracked</div>
                 </div>
+
                 <div class="stat-card">
                     <div class="stat-number">98%</div>
                     <div class="stat-label">Eligibility Accuracy</div>
                 </div>
+
                 <div class="stat-card">
                     <div class="stat-number">4.9k</div>
                     <div class="stat-label">Students Placed</div>
@@ -62,11 +66,13 @@
                 <h3>CGPA Matters</h3>
                 <p>Students with CGPA ≥ 8.0 have 3.2× higher chance of getting offers above 30 LPA.</p>
             </div>
+
             <div class="tip-card">
                 <div class="tip-icon">💼</div>
                 <h3>Skill-First Hiring</h3>
                 <p>80% of MAANG companies now prioritize LeetCode + Projects over CGPA alone.</p>
             </div>
+
             <div class="tip-card">
                 <div class="tip-icon">🎯</div>
                 <h3>Start Early</h3>
@@ -80,7 +86,6 @@
     </footer>
 
     <script>
-        // Simple smooth scroll for future links
         document.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', (e) => {
                 if (link.getAttribute('href').startsWith('#')) {
@@ -90,21 +95,6 @@
                     });
                 }
             });
-        });
-    </script>
-
-    
-    <script>
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            const user = JSON.parse(localStorage.getItem('user') || '{}');
-            if (user && user.role) {
-                if (user.role === 'admin') {
-                    window.location.href = 'admin.html';
-                } else if (user.role === 'student') {
-                    window.location.href = 'student.html';
-                }
-            }
         });
     </script>
 </body>

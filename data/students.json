@@ -45,5 +45,14 @@
       "c++"
     ],
     "cgpa": 8
+  },
+  {
+    "id": 6,
+    "name": "jiya",
+    "branch": "computer science",
+    "skills": [
+      "c++"
+    ],
+    "cgpa": 8.5
   }
 ]

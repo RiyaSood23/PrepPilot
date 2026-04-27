@@ -1,64 +1,216 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PrepPilot • Login</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <style>
-        body { background: linear-gradient(135deg, #0a0a0a, #1a1a2e); min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'Segoe UI', sans-serif; }
-        .login-box {
-            background: rgba(255,255,255,0.08); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px; padding: 50px 40px; width: 100%; max-width: 400px; text-align: center;
-        }
-        .logo { font-size: 48px; font-weight: 900; background: linear-gradient(#22c55e, #86efac); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
-        input { width: 100%; padding: 14px; margin: 12px 0; background: #1f1f1f; border: 1px solid #444; border-radius: 10px; color: white; }
-        button { width: 100%; padding: 16px; background: #22c55e; color: black; border: none; border-radius: 10px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 10px; }
-        button:hover { background: #4ade80; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PrepPilot • Login</title>
+
+<style>
+body {
+    background: linear-gradient(135deg, #0a0a0a, #1a1a2e);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+}
+
+.login-box {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 24px;
+    padding: 50px 40px;
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+}
+
+.logo {
+    font-size: 48px;
+    font-weight: 900;
+    background: linear-gradient(#22c55e, #86efac);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+h2 {
+    color: #aaa;
+    margin-top: 10px;
+    font-weight: 500;
+}
+
+/* Role Tabs */
+.role-tabs {
+    display: flex;
+    gap: 10px;
+    margin: 30px 0;
+}
+
+.role-tab {
+    flex: 1;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid #444;
+    background: transparent;
+    color: #aaa;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.role-tab.active {
+    background: #22c55e;
+    color: black;
+    border-color: #22c55e;
+}
+
+/* Inputs */
+input {
+    width: 100%;
+    padding: 14px;
+    margin: 10px 0;
+    background: #1f1f1f;
+    border: 1px solid #444;
+    border-radius: 12px;
+    color: white;
+    font-size: 14px;
+}
+
+/* Buttons */
+.btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+
+.btn-primary {
+    background: #22c55e;
+    color: black;
+}
+
+.btn-primary:hover {
+    background: #4ade80;
+}
+
+.btn-secondary {
+    background: #2a2a2a;
+    color: #bbb;
+}
+
+.btn-secondary:hover {
+    background: #333;
+}
+
+/* Toggle links */
+.switch-text {
+    margin-top: 12px;
+    font-size: 14px;
+    color: #aaa;
+}
+
+.switch-text span {
+    color: #22c55e;
+    cursor: pointer;
+    font-weight: 600;
+}
+</style>
 </head>
+
 <body>
-    <div class="login-box">
-        <div class="logo">PrepPilot</div>
-        <h2>Login to Continue</h2>
-        
-        <input type="email" id="email" placeholder="Email" value="admin@college.edu">
-        <input type="password" id="password" placeholder="Password" value="admin123">
-        
-        <button onclick="handleLogin()">Login</button>
-        
-        <p style="margin-top:20px; color:#888; font-size:0.9rem;">
-            Demo:<br>
-            Admin → admin@college.edu / admin123<br>
-            Student → student@college.edu / student123
-        </p>
+
+<div class="login-box">
+    <div class="logo">PrepPilot</div>
+    <h2>Login to Continue</h2>
+
+    <div class="role-tabs">
+        <button id="adminTab" class="role-tab active" onclick="selectRole('admin')">Admin</button>
+        <button id="studentTab" class="role-tab" onclick="selectRole('student')">Student</button>
     </div>
 
-    <script>
-    async function handleLogin() {
-        const email = document.getElementById('email').value.trim();
-        
-        let role = "student";
-        if (email.includes("admin")) role = "admin";
+    <!-- ADMIN -->
+    <div id="admin-form">
+        <input type="email" value="admin@gmail.com" id="admin-email">
+        <input type="password" value="admin123" id="admin-password">
+        <button class="btn btn-primary" onclick="handleAdminLogin()">Login as Admin</button>
+    </div>
 
-        // Temporary hardcoded login for testing
-        const fakeUser = {
-            email: email,
-            role: role,
-            name: email.split('@')[0]
-        };
+    <!-- STUDENT -->
+    <div id="student-form" style="display:none;">
 
-        localStorage.setItem('token', 'fake-jwt-token-' + Date.now());
-        localStorage.setItem('user', JSON.stringify(fakeUser));
+        <!-- LOGIN -->
+        <div id="student-login">
+            <input type="email" id="student-email" placeholder="Email">
+            <input type="password" id="student-password" placeholder="Password">
+            <button class="btn btn-primary" onclick="handleStudentLogin()">Login</button>
 
-        alert(`✅ Login Successful as ${role.toUpperCase()}!`);
-        
-        if (role === 'admin') {
-            window.location.href = 'admin.html';
-        } else {
-            window.location.href = 'student.html';
-        }
-    }
+            <div class="switch-text">
+                New student? <span onclick="showRegister()">Register</span>
+            </div>
+        </div>
+
+        <!-- REGISTER -->
+        <div id="student-register" style="display:none;">
+            <input type="text" id="s-name" placeholder="Full Name">
+            <input type="text" id="s-branch" placeholder="Branch">
+            <input type="number" id="s-cgpa" step="0.01" placeholder="CGPA">
+            <input type="text" id="s-skills" placeholder="Skills">
+
+            <button class="btn btn-primary" onclick="handleStudentRegister()">Register</button>
+
+            <div class="switch-text">
+                Already have account? <span onclick="showLogin()">Login</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+function selectRole(role) {
+    document.getElementById('admin-form').style.display = role === 'admin' ? 'block' : 'none';
+    document.getElementById('student-form').style.display = role === 'student' ? 'block' : 'none';
+
+    document.getElementById('adminTab').classList.toggle('active', role === 'admin');
+    document.getElementById('studentTab').classList.toggle('active', role === 'student');
+}
+
+function showRegister() {
+    document.getElementById('student-login').style.display = 'none';
+    document.getElementById('student-register').style.display = 'block';
+}
+
+function showLogin() {
+    document.getElementById('student-login').style.display = 'block';
+    document.getElementById('student-register').style.display = 'none';
+}
+
+function handleAdminLogin() {
+    localStorage.setItem('user', JSON.stringify({role: "admin"}));
+    window.location.href = "admin.html";
+}
+
+function handleStudentLogin() {
+    localStorage.setItem('user', JSON.stringify({role: "student"}));
+    window.location.href = "student.html";
+}
+
+function handleStudentRegister() {
+    const name = document.getElementById('s-name').value.trim();
+    if (!name) return alert("Enter name");
+
+    localStorage.setItem('user', JSON.stringify({role: "student"}));
+    window.location.href = "student.html";
+}
+
+window.onload = () => selectRole('admin');
 </script>
+
 </body>
 </html>

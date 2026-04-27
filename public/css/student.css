@@ -1,4 +1,3 @@
-/* css/student.css */
 * { margin:0; padding:0; box-sizing:border-box; }
 
 body {
@@ -7,7 +6,6 @@ body {
     color: #e5e5e5;
 }
 
-/* Navbar same as admin.css */
 .navbar { background: rgba(10,10,10,0.95); backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #222; }
 .nav-container { max-width:1280px; margin:0 auto; padding:18px 40px; display:flex; align-items:center; justify-content:space-between; }
 .logo {
@@ -28,7 +26,6 @@ body {
     padding: 0 40px;
 }
 
-/* Registration */
 .registration-box {
     max-width: 620px;
     margin: 60px auto;
@@ -98,7 +95,6 @@ body {
     transform: translateY(-3px);
 }
 
-/* Companies View */
 .companies-view {
     margin-top: 40px;
 }
@@ -152,7 +148,6 @@ body {
     color: #22c55e;
 }
 
-/* Reuse company card style from admin */
 .companies-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
@@ -182,33 +177,56 @@ body {
     box-shadow: 0 0 0 3px rgba(239,68,68,0.15);
 }
 
-.status-badge {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    padding: 8px 22px;
-    border-radius: 9999px;
-    font-weight: 700;
-    font-size: 0.95rem;
-}
-
-.status-eligible {
-    background: #22c55e;
-    color: #0a0a0a;
-}
-
-.status-not {
-    background: #ef4444;
-    color: white;
-}
-
-/* Same card-header, card-body as admin.css */
 .card-header { height: 180px; position: relative; }
 .card-header img { width:100%; height:100%; object-fit:cover; }
+
 .card-body { padding:24px; }
 .card-body h3 { font-size:1.5rem; margin-bottom:8px; }
+
 .role { color:#86efac; font-weight:600; margin-bottom:16px; }
-.info-row { display:flex; justify-content:space-between; margin-bottom:12px; font-size:1rem; }
-.info-label { color:#888; }
-.info-value { font-weight:600; }
-.cgpa-badge { background:rgba(34,197,94,0.15); color:#4ade80; padding:4px 14px; border-radius:9999px; display:inline-block; margin-top:8px; }
+
+.info-grid {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 1rem;
+}
+
+.stats {
+    display: flex;
+    justify-content: space-between;
+    margin: 16px 0;
+    text-align: center;
+}
+
+.cgpa-info {
+    margin-top: 10px;
+    font-size: 0.95rem;
+    color: #aaa;
+}
+
+.apply-btn {
+    width: 100%;
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.apply-btn.active {
+    background: #22c55e;
+    color: black;
+}
+
+.apply-btn.active:hover {
+    background: #4ade80;
+}
+
+.apply-btn.disabled {
+    background: #333;
+    color: #777;
+    cursor: not-allowed;
+}
