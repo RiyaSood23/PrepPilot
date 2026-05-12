@@ -2,10 +2,5 @@ node_modules/
 .env
 *.log
 
-# Documentation and testing files (kept local only)
-COMPLETE_EXPLANATION_GUIDE.md
-COMPANY_API_TESTING.md
-COMPLETE_PROJECT_DOCUMENTATION.md
-PREPPILOT_EVAL2_VIVA_MASTER_NOTES.md
-*.pdf
+# Local test fixture
 test_download.json

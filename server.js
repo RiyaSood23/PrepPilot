@@ -17,6 +17,7 @@ app.use("/api/companies", companyRoutes);
 app.use("/api/students", studentRoutes);
 
 // Test Route
+
 app.get("/", (req, res) => {
   res.send("PrepPilot Server Running");
 });

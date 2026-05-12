@@ -6,7 +6,7 @@ const SECRET_KEY = "SECRET_KEY";
  * JWT Authentication Middleware
  * Verifies JWT token and attaches user data to req.user
  */
-const auth = (req, res, next) => {
+const auth = (req, res, next) => { 
   try {
     // Get token from Authorization header
     const authHeader = req.headers.authorization;
@@ -26,7 +26,7 @@ const auth = (req, res, next) => {
 
     // Verify token
     const decoded = jwt.verify(token, SECRET_KEY);
-    
+
     // Attach user data to request
     req.user = {
       id: decoded.id,
