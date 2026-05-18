@@ -9,13 +9,12 @@ const connectDB = require('./config/db');
 const companyRoutes = require("./routes/company.routes");
 const studentRoutes = require("./routes/student.routes");
 const analyticsRoutes = require("./routes/analytics.routes");
-const viewRoutes = require("./routes/view.routes");
 
 // Middleware
 app.use(express.json());
 app.use(express.static("public"));
 
-// View engine setup
+// View engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
@@ -23,12 +22,17 @@ app.set('view engine', 'ejs');
 app.use("/api/companies", companyRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/analytics", analyticsRoutes);
-app.use('/', viewRoutes);
 
 // Test Route
+
 app.get("/", (req, res) => {
   res.send("PrepPilot Server Running");
 });
+
+const authRoutes = require("./routes/auth.routes");
+app.use("/api/auth", authRoutes);
+const viewRoutes = require("./routes/view.routes");
+app.use('/', viewRoutes);
 
 // 404 Handler
 app.use((req, res) => {

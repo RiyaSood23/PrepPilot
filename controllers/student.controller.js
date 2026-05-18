@@ -1,109 +1,156 @@
-const fs = require("fs").promises;
-const path = require("path");
+const Student = require("../models/student");
+const jwt = require("jsonwebtoken");
 
-const studentsFile = path.join(__dirname, "../data/students.json");
-const companiesFile = path.join(__dirname, "../data/companies.json");
+const SECRET_KEY = process.env.SECRET_KEY;
 
-// Helper to safely read JSON array from file
-async function readJsonArray(filePath) {
-  try {
-    const data = await fs.readFile(filePath, "utf-8");
-    if (!data.trim()) return [];
-    const parsed = JSON.parse(data);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch (err) {
-    // If file doesn't exist or is invalid, start with empty array
-    if (err.code === "ENOENT") return [];
-    console.error(`Error reading ${filePath}:`, err);
-    throw err;
-  }
-}
-
-// Register Student
+/**
+ * Register Student
+ * POST /api/students/register
+ * Public route
+ */
 exports.registerStudent = async (req, res) => {
   try {
-    let { name, branch, skills, cgpa } = req.body;
+    const { name, email, password, cgpa, skills } = req.body;
 
-    if (!name || !branch || !skills || cgpa === undefined) {
+    // Validation
+    if (!name || !email || !password || cgpa === undefined || !skills) {
       return res.status(400).json({
         success: false,
-        message: "All fields (name, branch, skills, cgpa) are required"
+        message: "All fields (name, email, password, cgpa, skills) are required"
       });
-    }
-
-    // Normalize skills: allow string (comma-separated) or array
-    if (typeof skills === "string") {
-      skills = skills
-        .split(",")
-        .map(s => s.trim())
-        .filter(Boolean);
     }
 
     if (!Array.isArray(skills) || skills.length === 0) {
       return res.status(400).json({
         success: false,
-        message: "Skills must be a non-empty array or comma-separated string"
+        message: "Skills must be a non-empty array"
       });
     }
 
-    const cgpaNumber = Number(cgpa);
-    if (!Number.isFinite(cgpaNumber) || cgpaNumber < 0 || cgpaNumber > 10) {
+    if (cgpa < 0 || cgpa > 10) {
       return res.status(400).json({
         success: false,
-        message: "CGPA must be a valid number between 0 and 10"
+        message: "CGPA must be between 0 and 10"
       });
     }
 
-    const students = await readJsonArray(studentsFile);
+    // Check if student already exists
+    const existingStudent = await Student.findOne({ email });
+    if (existingStudent) {
+      return res.status(409).json({
+        success: false,
+        message: "Email already registered"
+      });
+    }
 
-    // Generate sequential student ID
-    const studentId = students.length > 0
-      ? Math.max(...students.map(s => s.id)) + 1
-      : 1;
-
-    const newStudent = {
-      id: studentId,
+    // Create new student
+    const student = await Student.create({
       name,
-      branch,
-      skills,
-      cgpa: cgpaNumber
-    };
+      email,
+      password,
+      cgpa,
+      skills
+    });
 
-    students.push(newStudent);
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: student._id, email: student.email, role: student.role },
+      SECRET_KEY,
+      { expiresIn: "7d" }
+    );
 
-    await fs.writeFile(studentsFile, JSON.stringify(students, null, 2), "utf-8");
-
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
-      studentId
+      message: "Student registered successfully",
+      data: {
+        student: student.toJSON(),
+        token
+      }
     });
   } catch (error) {
-    console.error("Error in registerStudent:", error);
-    res.status(500).json({
+    console.error("Register error:", error);
+    return res.status(500).json({
       success: false,
-      message: "Server error"
+      message: "Error registering student",
+      error: error.message
     });
   }
 };
 
-// Check Eligibility
-exports.checkEligibility = async (req, res) => {
+/**
+ * Login Student
+ * POST /api/students/login
+ * Public route
+ */
+exports.loginStudent = async (req, res) => {
   try {
-    const studentIdParam = Number(req.params.studentId);
-    const companyIdParam = Number(req.params.companyId);
+    const { email, password } = req.body;
 
-    if (!Number.isInteger(studentIdParam) || !Number.isInteger(companyIdParam)) {
+    // Validation
+    if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: "studentId and companyId must be valid integers"
+        message: "Email and password are required"
       });
     }
 
-    const students = await readJsonArray(studentsFile);
-    const companies = await readJsonArray(companiesFile);
+    // Find student and include password field
+    const student = await Student.findOne({ email }).select("+password");
 
-    const student = students.find(s => s.id === studentIdParam);
-    const company = companies.find(c => c.id === companyIdParam);
+    if (!student) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials"
+      });
+    }
+
+    // Compare password
+    const isPasswordValid = await student.comparePassword(password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials"
+      });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: student._id, email: student.email, role: student.role },
+      SECRET_KEY,
+      { expiresIn: "7d" }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Login successful",
+      data: {
+        student: student.toJSON(),
+        token
+      }
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error logging in",
+      error: error.message
+    });
+  }
+};
+
+/**
+ * Get Eligibility for All Companies
+ * GET /api/students/eligibility
+ * Protected route (requires JWT)
+ */
+exports.getEligibilityForAllCompanies = async (req, res) => {
+  try {
+    // Get logged-in student ID from JWT
+    const studentId = req.user.id;
+
+    // Fetch student details
+    const student = await Student.findById(studentId);
 
     if (!student) {
       return res.status(404).json({
@@ -112,24 +159,72 @@ exports.checkEligibility = async (req, res) => {
       });
     }
 
-    if (!company) {
-      return res.status(404).json({
-        success: false,
-        message: "Company not found"
+    // Fetch all companies
+    // Assuming Company model exists with minCgpa and requiredSkills fields
+    const Company = require("../models/company");
+    const companies = await Company.find();
+
+    if (!companies || companies.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: "No companies available",
+        data: {
+          student: {
+            id: student._id,
+            name: student.name,
+            email: student.email,
+            cgpa: student.cgpa,
+            skills: student.skills
+          },
+          eligibility: []
+        }
       });
     }
 
-    const eligible = Number(student.cgpa) >= Number(company.minCgpa || 0);
+    // Calculate eligibility for each company
+    const eligibility = companies.map((company) => {
+      // Check CGPA eligibility
+      const isCgpaEligible = student.cgpa >= company.minCgpa;
 
-    res.json({
+      // Check skills eligibility
+      const requiredSkills = company.requiredSkills || [];
+      const hasRequiredSkills = requiredSkills.every((skill) =>
+        student.skills.map(s => s.toLowerCase()).includes(skill.toLowerCase())
+      );
+
+      return {
+        companyId: company._id,
+        companyName: company.name,
+        minCgpa: company.minCgpa,
+        requiredSkills: company.requiredSkills,
+        isEligible: isCgpaEligible && hasRequiredSkills,
+        reason: {
+          cgpaEligible: isCgpaEligible,
+          skillsEligible: hasRequiredSkills
+        }
+      };
+    });
+
+    return res.status(200).json({
       success: true,
-      eligible
+      message: "Eligibility calculated successfully",
+      data: {
+        student: {
+          id: student._id,
+          name: student.name,
+          email: student.email,
+          cgpa: student.cgpa,
+          skills: student.skills
+        },
+        eligibility
+      }
     });
   } catch (error) {
-    console.error("Error in checkEligibility:", error);
-    res.status(500).json({
+    console.error("Eligibility error:", error);
+    return res.status(500).json({
       success: false,
-      message: "Server error"
+      message: "Error fetching eligibility",
+      error: error.message
     });
   }
 };
