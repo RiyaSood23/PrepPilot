@@ -4,3 +4,5 @@ node_modules/
 
 # Local test fixture
 test_download.json
+
+/generated/prisma

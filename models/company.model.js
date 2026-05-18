@@ -33,6 +33,15 @@ const companySchema = new mongoose.Schema(
       default: 0,
       min: 0
     },
+    description: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    requiredSkills: {
+      type: [String],
+      default: []
+    },
     appliedCount: {
       type: Number,
       default: 0,
