@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>PrepPilot</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>PrepPilot</h1>
+      <nav>
+        <a href="/">Home</a> |
+        <a href="/companies-view">Companies</a>
+      </nav>
+    </header>
+    <main><section>
+  <h2>Companies</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Role</th>
+        <th>Min CGPA</th>
+        <th>Location</th>
+        <th>Package</th>
+        <th>Openings</th>
+        <th>Applied</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% companies.forEach(function(c) { %>
+        <tr>
+          <td><%= c.name %></td>
+          <td><%= c.role %></td>
+          <td><%= c.minCgpa %></td>
+          <td><%= c.location %></td>
+          <td><%= c.package %></td>
+          <td><%= c.openings %></td>
+          <td><%= c.appliedCount %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</section>
+</main>
+    <footer>
+      <p>&copy; PrepPilot</p>
+    </footer>
+  </body>
+</html>
+
