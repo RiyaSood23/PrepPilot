@@ -38,6 +38,8 @@
           <td><%= c.package %></td>
           <td><%= c.openings %></td>
           <td><%= c.appliedCount %></td>
+          <td><%= c.description || '' %></td>
+          <td><%= (c.requiredSkills || []).join(', ') %></td>
         </tr>
       <% }) %>
     </tbody>

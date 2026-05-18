@@ -152,7 +152,7 @@ Riya owns the following final evaluation upgrades:
 
 ### Specific Tasks for Riya
 
-1. **Setup PostgreSQL + Prisma**
+1. **Setup PostgreSQL + Prisma** done
    - Install PostgreSQL locally (or use managed service like Railway, Neon)
    - Create a new database named `preppilot_analytics`
    - Install Prisma CLI and client
@@ -160,17 +160,17 @@ Riya owns the following final evaluation upgrades:
    - Run `prisma migrate dev --name init` to create tables
    - Generate Prisma client
 
-2. **Create Analytics Models in PostgreSQL**
+2. **Create Analytics Models in PostgreSQL** done
    - PlacementStats: companyName (String), totalApplied (Int), totalSelected (Int), averageCgpa (Float), reportDate (DateTime)
    - CompanyReport: companyId (String), totalApplications (Int), selectedCount (Int), rejectedCount (Int), createdAt (DateTime)
    - Add indexes on companyName and reportDate for query performance
 
-3. **Implement Analytics Endpoints**
+3. **Implement Analytics Endpoints** done
    - `POST /api/analytics/sync-stats` - sync placement data from MongoDB to PostgreSQL
    - `GET /api/analytics/placement-stats` - get all placement statistics
    - `GET /api/analytics/company-report/:companyId` - detailed report for one company
 
-4. **Convert Company Listing to EJS**
+4. **Convert Company Listing to EJS** done
    - Setup EJS as view engine in server.js (`app.set('view engine', 'ejs')`)
    - Create `views/` folder
    - Create `views/layout.ejs` with header/footer reusable HTML
@@ -178,7 +178,7 @@ Riya owns the following final evaluation upgrades:
    - Route: `GET /companies-view` renders the EJS page with all companies from MongoDB
    - Add CSS styling to match existing site
 
-5. **Improve Company Model**
+5. **Improve Company Model** done
    - Add optional `requiredSkills` array to Company model
    - Add optional `description` field for company details
    - Update company controller to handle new fields in POST/PUT requests

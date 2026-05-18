@@ -26,7 +26,7 @@ const getAllCompanies = async (req, res) => {
 // POST /api/companies - Add a new company
 const createCompany = async (req, res) => {
     try {
-        const { name, role, minCgpa, location, package: pkg, openings } = req.body;
+            const { name, role, minCgpa, location, package: pkg, openings, description, requiredSkills } = req.body;
 
         // Validate required fields
         if (!name || !role || !minCgpa || !location || !pkg) {
@@ -54,6 +54,16 @@ const createCompany = async (req, res) => {
             });
         }
 
+        // Normalize requiredSkills: accept array or comma-separated string
+        let skillsArray = [];
+        if (requiredSkills) {
+            if (Array.isArray(requiredSkills)) {
+                skillsArray = requiredSkills.map(s => String(s).trim()).filter(Boolean);
+            } else if (typeof requiredSkills === 'string') {
+                skillsArray = requiredSkills.split(',').map(s => s.trim()).filter(Boolean);
+            }
+        }
+
         const newCompany = await Company.create({
             name: name.trim(),
             role: role.trim(),
@@ -61,6 +71,8 @@ const createCompany = async (req, res) => {
             location: location.trim(),
             package: pkg.trim(),
             openings: parsedOpenings,
+            description: description ? String(description).trim() : '',
+            requiredSkills: skillsArray,
             appliedCount: 0
         });
 

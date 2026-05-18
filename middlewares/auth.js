@@ -1,12 +1,12 @@
 const jwt = require("jsonwebtoken");
 
-const SECRET_KEY = "SECRET_KEY";
+const SECRET_KEY = process.env.SECRET_KEY || "SECRET_KEY";
 
 /**
  * JWT Authentication Middleware
  * Verifies JWT token and attaches user data to req.user
  */
-const auth = (req, res, next) => { 
+const auth = (req, res, next) => {
   try {
     // Get token from Authorization header
     const authHeader = req.headers.authorization;
