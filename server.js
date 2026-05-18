@@ -3,18 +3,27 @@ require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const path = require('path');
 
 const connectDB = require('./config/db');
 const companyRoutes = require("./routes/company.routes");
 const studentRoutes = require("./routes/student.routes");
+const analyticsRoutes = require("./routes/analytics.routes");
+const viewRoutes = require("./routes/view.routes");
 
 // Middleware
 app.use(express.json());
 app.use(express.static("public"));
 
+// View engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
 // Route Mounting
 app.use("/api/companies", companyRoutes);
 app.use("/api/students", studentRoutes);
+app.use("/api/analytics", analyticsRoutes);
+app.use('/', viewRoutes);
 
 // Test Route
 app.get("/", (req, res) => {

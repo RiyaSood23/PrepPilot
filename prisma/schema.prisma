@@ -1,0 +1,34 @@
+// Prisma schema for PrepPilot analytics (PostgreSQL)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model PlacementStats {
+  id            String   @id @default(cuid())
+  companyName   String
+  totalApplied  Int      @default(0)
+  totalSelected Int      @default(0)
+  averageCgpa   Float?
+  reportDate    DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([companyName, reportDate])
+}
+
+model CompanyReport {
+  id               String   @id @default(cuid())
+  companyId        String
+  totalApplications Int     @default(0)
+  selectedCount    Int      @default(0)
+  rejectedCount    Int      @default(0)
+  reportDate       DateTime @default(now())
+  createdAt        DateTime @default(now())
+
+  @@index([companyId, reportDate])
+}
