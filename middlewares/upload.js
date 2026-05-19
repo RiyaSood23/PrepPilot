@@ -2,10 +2,20 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-const uploadDir = path.join(__dirname, "..", "uploads");
+const uploadDir = process.env.VERCEL
+  ? path.join("/tmp", "uploads")
+  : path.join(__dirname, "..", "uploads");
 
 if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+  try {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  } catch (error) {
+    if (process.env.VERCEL) {
+      console.warn('Upload directory is not writable in Vercel, using /tmp/uploads');
+    } else {
+      throw error;
+    }
+  }
 }
 
 const storage = multer.diskStorage({
