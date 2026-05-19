@@ -1,5 +1,14 @@
 {
   "version": 2,
+  "functions": {
+    "api/index.js": {
+      "includeFiles": [
+        "public/**",
+        "views/**",
+        "uploads/**"
+      ]
+    }
+  },
   "routes": [
     {
       "src": "/(.*)",
