@@ -38,6 +38,18 @@ const studentSchema = new mongoose.Schema(
         message: "At least one skill is required"
       }
     },
+    resumeUrl: {
+      type: String,
+      default: null
+    },
+    resumePublicId: {
+      type: String,
+      default: null
+    },
+    resumeUploadedAt: {
+      type: Date,
+      default: null
+    },
     role: {
       type: String,
       enum: ["student"],

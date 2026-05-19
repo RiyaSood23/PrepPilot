@@ -5,6 +5,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const connectDB = require('./config/db');
+const { testConnection: testCloudinaryConnection } = require('./config/cloudinary');
 const companyRoutes = require("./routes/company.routes");
 const studentRoutes = require("./routes/student.routes");
 
@@ -46,6 +47,14 @@ app.use((err, req, res, next) => {
 // Start Server
 const startServer = async () => {
   await connectDB();
+
+  try {
+    await testCloudinaryConnection();
+    console.log('Cloudinary connected successfully');
+  } catch (error) {
+    console.error('Cloudinary connection failed:', error.message);
+  }
+
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
