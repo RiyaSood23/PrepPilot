@@ -1,7 +1,11 @@
 // Company routes - API endpoints for company operations
+<<<<<<< HEAD
 
 
 const express = require("express");
+=======
+const express = require('express');
+>>>>>>> 4cf83678f732bf5bee2b41b847b35187daf38c88
 const router = express.Router();
 
 const auth = require("../middlewares/auth");

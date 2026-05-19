@@ -1,37 +1,14 @@
-// Company controller - Handle business logic for company operations
+const Company = require('../models/company.model');
 
-const fs = require('fs').promises;
-const path = require('path');
-
-const COMPANIES_FILE = path.join(__dirname, '../data/companies.json');
-
-// Helper function to read companies from JSON file
-const readCompanies = async () => {
-    try {
-        const data = await fs.readFile(COMPANIES_FILE, 'utf8');
-        return JSON.parse(data);
-    } catch (error) {
-        // If file doesn't exist or is empty, return empty array
-        return [];
-    }
-};
-
-// Helper function to write companies to JSON file
-const writeCompanies = async (companies) => {
-    await fs.writeFile(COMPANIES_FILE, JSON.stringify(companies, null, 2), 'utf8');
-};
-
-// Generate unique numeric ID
-const generateId = (companies) => {
-    if (companies.length === 0) return 1;
-    const maxId = Math.max(...companies.map(c => c.id));
-    return maxId + 1;
+const parseNumber = (value) => {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : NaN;
 };
 
 // GET /api/companies - Get all companies
 const getAllCompanies = async (req, res) => {
     try {
-        const companies = await readCompanies();
+        const companies = await Company.find().sort({ createdAt: -1 });
         res.status(200).json({
             success: true,
             message: 'Companies retrieved successfully',
@@ -49,7 +26,7 @@ const getAllCompanies = async (req, res) => {
 // POST /api/companies - Add a new company
 const createCompany = async (req, res) => {
     try {
-        const { name, role, minCgpa, location, package: pkg } = req.body;
+        const { name, role, minCgpa, location, package: pkg, openings } = req.body;
 
         // Validate required fields
         if (!name || !role || !minCgpa || !location || !pkg) {
@@ -59,33 +36,33 @@ const createCompany = async (req, res) => {
             });
         }
 
-        // Validate minCgpa is a number
-        if (isNaN(minCgpa) || minCgpa < 0 || minCgpa > 10) {
+        const parsedMinCgpa = parseNumber(minCgpa);
+        const parsedOpenings = openings === undefined || openings === null || openings === '' ? 0 : parseNumber(openings);
+
+        // Validate numeric fields
+        if (Number.isNaN(parsedMinCgpa) || parsedMinCgpa < 0 || parsedMinCgpa > 10) {
             return res.status(400).json({
                 success: false,
                 message: 'minCgpa must be a number between 0 and 10'
             });
         }
 
-        // Read existing companies
-        const companies = await readCompanies();
+        if (Number.isNaN(parsedOpenings) || parsedOpenings < 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'openings must be a number greater than or equal to 0'
+            });
+        }
 
-        // Create new company object
-        const newCompany = {
-            id: generateId(companies),
+        const newCompany = await Company.create({
             name: name.trim(),
             role: role.trim(),
-            minCgpa: parseFloat(minCgpa),
+            minCgpa: parsedMinCgpa,
             location: location.trim(),
             package: pkg.trim(),
-            createdAt: new Date().toISOString()
-        };
-
-        // Add to companies array
-        companies.push(newCompany);
-
-        // Write to file
-        await writeCompanies(companies);
+            openings: parsedOpenings,
+            appliedCount: 0
+        });
 
         res.status(201).json({
             success: true,
@@ -105,34 +82,22 @@ const createCompany = async (req, res) => {
 const deleteCompany = async (req, res) => {
     try {
         const { id } = req.params;
-        const companyId = parseInt(id);
 
-        // Validate ID
-        if (isNaN(companyId)) {
+        if (!id) {
             return res.status(400).json({
                 success: false,
                 message: 'Invalid company ID'
             });
         }
 
-        // Read companies
-        const companies = await readCompanies();
+        const deletedCompany = await Company.findByIdAndDelete(id);
 
-        // Find company index
-        const companyIndex = companies.findIndex(c => c.id === companyId);
-
-        if (companyIndex === -1) {
+        if (!deletedCompany) {
             return res.status(404).json({
                 success: false,
                 message: 'Company not found'
             });
         }
-
-        // Remove company
-        const deletedCompany = companies.splice(companyIndex, 1)[0];
-
-        // Write to file
-        await writeCompanies(companies);
 
         res.status(200).json({
             success: true,
@@ -151,31 +116,12 @@ const deleteCompany = async (req, res) => {
 // GET /api/companies/download - Download companies as JSON file
 const downloadCompanies = async (req, res) => {
     try {
-        const fsSync = require('fs');
-
-        // Check if file exists
-        if (!fsSync.existsSync(COMPANIES_FILE)) {
-            return res.status(404).json({
-                success: false,
-                message: 'No companies data available'
-            });
-        }
+        const companies = await Company.find().sort({ createdAt: -1 });
 
         // Set headers for file download
         res.setHeader('Content-Type', 'application/json');
         res.setHeader('Content-Disposition', 'attachment; filename="companies.json"');
-
-        // Create read stream and pipe to response
-        const readStream = fsSync.createReadStream(COMPANIES_FILE);
-        readStream.pipe(res);
-
-        readStream.on('error', (error) => {
-            res.status(500).json({
-                success: false,
-                message: 'Error downloading file',
-                error: error.message
-            });
-        });
+        res.status(200).send(JSON.stringify(companies, null, 2));
     } catch (error) {
         res.status(500).json({
             success: false,

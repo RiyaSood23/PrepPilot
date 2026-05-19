@@ -2,11 +2,12 @@ const connectDB = require("./config/db");
 connectDB();
 
 const express = require("express");
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Import Routes
+const connectDB = require('./config/db');
 const companyRoutes = require("./routes/company.routes");
 const studentRoutes = require("./routes/student.routes");
 
@@ -42,9 +43,20 @@ app.use((err, req, res, next) => {
 });
 
 // Start Server
+<<<<<<< HEAD
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
 const authRoutes = require("./routes/auth.routes");
 app.use("/api/auth", authRoutes);
+=======
+const startServer = async () => {
+  await connectDB();
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+};
+
+startServer();
+>>>>>>> 4cf83678f732bf5bee2b41b847b35187daf38c88
