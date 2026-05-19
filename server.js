@@ -1,5 +1,17 @@
+const http = require("http");
+
 const express = require("express");
-require("dotenv").config();
+require("dotenv").config({ 
+  path: "./.env"
+ });
+
+console.log("ENV:", process.env.MONGODB_URI);
+console.log("SESSION:", process.env.SESSION_SECRET);
+
+const errorHandler = require("./middlewares/error");
+
+const session = require("express-session");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -16,6 +28,22 @@ const viewRoutes = require("./routes/view.routes");
 
 // Middleware
 app.use(express.json());
+app.use(cookieParser());
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+
+    resave: false,
+
+    saveUninitialized: false,
+
+    cookie: {
+      secure: false,
+      maxAge: 1000 * 60 * 60
+    }
+  })
+);
 app.use(express.static("public"));
 
 
@@ -47,26 +75,50 @@ app.use((req, res) => {
   });
 });
 
+app.use(errorHandler);
 
-// Error handler
-app.use((err, req, res, next) => {
-  console.error(err.stack);
 
-  res.status(500).json({
-    success:false,
-    message:"Internal Server Error",
-    error:err.message
-  });
+
+const server = http.createServer(app);
+
+const io = require("socket.io")(server,{
+   cors:{
+      origin:"*"
+   }
 });
 
 
-// Start server + DB
-const startServer = async () => {
-  await connectDB();
+io.on("connection",(socket)=>{
 
-  app.listen(PORT, () => {
-    console.log(`Server running on ${PORT}`);
-  });
+   console.log("User connected");
+
+   socket.on("newApplication",(data)=>{
+
+      io.emit("applicationUpdated",data);
+
+   });
+
+   socket.on("disconnect",()=>{
+
+      console.log("User disconnected");
+
+   });
+
+});
+
+
+const startServer = async () => {
+
+   await connectDB();
+
+   server.listen(PORT,()=>{
+
+      console.log(`Server running on ${PORT}`);
+
+   });
+
 };
+
+
 
 startServer();
