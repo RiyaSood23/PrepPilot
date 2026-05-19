@@ -27,7 +27,7 @@ app.use("/api/analytics", analyticsRoutes);
 // Test Route
 
 app.get("/", (req, res) => {
-  res.send("PrepPilot Server Running");
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 const authRoutes = require("./routes/auth.routes");
@@ -53,20 +53,36 @@ app.use((err, req, res, next) => {
   });
 });
 
+let initPromise;
+
+const initializeApp = async () => {
+  if (!initPromise) {
+    initPromise = (async () => {
+      await connectDB();
+
+      try {
+        await testCloudinaryConnection();
+        console.log('Cloudinary connected successfully');
+      } catch (error) {
+        console.error('Cloudinary connection failed:', error.message);
+      }
+    })();
+  }
+
+  return initPromise;
+};
+
 // Start Server
 const startServer = async () => {
-  await connectDB();
-
-  try {
-    await testCloudinaryConnection();
-    console.log('Cloudinary connected successfully');
-  } catch (error) {
-    console.error('Cloudinary connection failed:', error.message);
-  }
+  await initializeApp();
 
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
 };
 
-startServer();
+if (require.main === module) {
+  startServer();
+}
+
+module.exports = { app, initializeApp };
