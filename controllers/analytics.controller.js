@@ -1,10 +1,26 @@
-const prisma = require('../config/prismaClient');
 const Company = require('../models/company.model');
 const Application = require('../models/application');
+
+const getPrisma = () => {
+  try {
+    return require('../config/prismaClient');
+  } catch (error) {
+    console.error('Prisma client unavailable:', error.message);
+    return null;
+  }
+};
 
 // POST /api/analytics/sync-stats
 exports.syncStats = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) {
+      return res.status(503).json({
+        success: false,
+        message: 'Analytics is unavailable in this deployment'
+      });
+    }
+
     const companies = await Company.find();
     const results = [];
 
@@ -52,6 +68,11 @@ exports.syncStats = async (req, res) => {
 // GET /api/analytics/placement-stats
 exports.getPlacementStats = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) {
+      return res.status(200).json({ success: true, data: [] });
+    }
+
     const stats = await prisma.placementStats.findMany({ orderBy: { reportDate: 'desc' } });
     return res.status(200).json({ success: true, data: stats });
   } catch (error) {
@@ -63,6 +84,11 @@ exports.getPlacementStats = async (req, res) => {
 // GET /api/analytics/company-report/:companyId
 exports.getCompanyReport = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) {
+      return res.status(200).json({ success: true, data: [] });
+    }
+
     const { companyId } = req.params;
     const reports = await prisma.companyReport.findMany({ where: { companyId }, orderBy: { reportDate: 'desc' } });
     return res.status(200).json({ success: true, data: reports });
