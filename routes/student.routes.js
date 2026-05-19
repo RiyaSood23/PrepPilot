@@ -3,6 +3,7 @@ const router = express.Router();
 
 const auth = require("../middlewares/auth");
 const role = require("../middlewares/role");
+const upload = require("../middlewares/upload");
 
 // Import controllers
 const {
@@ -10,7 +11,7 @@ const {
   loginStudent,
   getEligibilityForAllCompanies
 } = require("../controllers/student.controller");
-
+const { uploadResume, getResume, deleteResume } = require("../controllers/student.controller");
 const {
   applyJob,
   getStudentApplications,
@@ -54,5 +55,29 @@ router.get("/applications", auth, role("student"), getStudentApplications);
  * Get a specific application by ID
  */
 router.get("/applications/:applicationId", auth, role("student"), getApplicationById);
+
+/**
+ * POST /api/students/upload-resume
+ * Protected route - student
+ */
+router.post(
+  "/upload-resume",
+  auth,
+  role("student"),
+  upload.single("resume"),
+  uploadResume
+);
+/**
+ * GET /api/students/:studentId/resume
+ * Public route to fetch resume URL
+ */
+router.get("/:studentId/resume", getResume);
+
+/**
+ * DELETE /api/students/:studentId/resume
+ * Protected route - student only
+ */
+router.delete("/:studentId/resume", auth, role("student"), deleteResume);
+ 
 
 module.exports = router;

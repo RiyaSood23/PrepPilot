@@ -1,8 +1,10 @@
 const API_BASE = "http://localhost:3000";
-
+const token = localStorage.getItem('token');
 const user = JSON.parse(localStorage.getItem('user') || '{}');
-if (user.role !== 'student') {
-    alert("Access Denied! Please login as Student.");
+
+if (user.role !== 'student' || !token) {
+    localStorage.clear();
+    alert("Please login first as a student.");
     window.location.href = 'login.html';
 }
 

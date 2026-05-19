@@ -1,5 +1,8 @@
 const Student = require("../models/student");
 const jwt = require("jsonwebtoken");
+const { cloudinary } = require("../config/cloudinary");
+const fs = require("fs");
+const path = require("path");
 
 const SECRET_KEY = process.env.SECRET_KEY;
 
@@ -49,7 +52,9 @@ exports.registerStudent = async (req, res) => {
       email,
       password,
       cgpa,
-      skills
+      skills,
+      resumeUrl: req.body.resumeUrl || null,
+      resumeUploadedAt: req.body.resumeUrl ? new Date() : null
     });
 
     // Generate JWT token
@@ -72,6 +77,169 @@ exports.registerStudent = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Error registering student",
+      error: error.message
+    });
+  }
+};
+
+/**
+ * Upload Resume
+ * POST /api/students/upload-resume
+ * Protected route (student)
+ */
+exports.uploadResume = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "Resume file is required" });
+    }
+
+    const studentId = req.user.id;
+    const student = await Student.findById(studentId);
+    if (!student) {
+      // cleanup temp file
+      try { fs.unlinkSync(req.file.path); } catch (e) {}
+      return res.status(404).json({ success: false, message: "Student not found" });
+    }
+
+    // If existing resume, delete from Cloudinary
+    if (student.resumePublicId) {
+      try {
+        await cloudinary.uploader.destroy(student.resumePublicId, { resource_type: 'auto' });
+      } catch (err) {
+        console.warn('Cloudinary delete warning:', err.message);
+      }
+    }
+
+    // Upload file from local temp path
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      folder: 'preppilot/resumes',
+      resource_type: 'auto'
+    });
+
+    // Remove temp file
+    try { fs.unlinkSync(req.file.path); } catch (e) {}
+
+    student.resumeUrl = result.secure_url;
+    student.resumePublicId = result.public_id;
+    student.resumeUploadedAt = new Date();
+    await student.save();
+
+    return res.status(200).json({ success: true, message: 'Resume uploaded', data: { resumeUrl: student.resumeUrl } });
+  } catch (error) {
+    console.error('Upload resume error:', error);
+    // cleanup temp file if present
+    if (req.file && req.file.path) {
+      try { fs.unlinkSync(req.file.path); } catch (e) {}
+    }
+    return res.status(500).json({ success: false, message: 'Error uploading resume', error: error.message });
+  }
+};
+
+/**
+ * Get Student Resume URL
+ * GET /api/students/:studentId/resume
+ */
+exports.getResume = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    const student = await Student.findById(studentId);
+    if (!student) return res.status(404).json({ success: false, message: 'Student not found' });
+    if (!student.resumeUrl) return res.status(404).json({ success: false, message: 'Resume not found' });
+    return res.status(200).json({ success: true, data: { resumeUrl: student.resumeUrl } });
+  } catch (error) {
+    console.error('Get resume error:', error);
+    return res.status(500).json({ success: false, message: 'Error fetching resume', error: error.message });
+  }
+};
+
+/**
+ * Delete Student Resume
+ * DELETE /api/students/:studentId/resume
+ */
+exports.deleteResume = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    // only allow student owner
+    if (req.user.id !== studentId) return res.status(403).json({ success: false, message: 'Forbidden' });
+    const student = await Student.findById(studentId);
+    if (!student) return res.status(404).json({ success: false, message: 'Student not found' });
+
+    if (student.resumePublicId) {
+      try {
+        await cloudinary.uploader.destroy(student.resumePublicId, { resource_type: 'auto' });
+      } catch (err) {
+        console.warn('Cloudinary delete warning:', err.message);
+      }
+    }
+
+    student.resumeUrl = null;
+    student.resumePublicId = null;
+    student.resumeUploadedAt = null;
+    await student.save();
+
+    return res.status(200).json({ success: true, message: 'Resume deleted' });
+  } catch (error) {
+    console.error('Delete resume error:', error);
+    return res.status(500).json({ success: false, message: 'Error deleting resume', error: error.message });
+  }
+};
+/**
+ * Login Student
+ * POST /api/students/login
+ * Public route
+ */
+exports.loginStudent = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Validation
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password are required"
+      });
+    }
+
+    // Find student and include password field
+    const student = await Student.findOne({ email }).select("+password");
+
+    if (!student) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials"
+      });
+    }
+
+    // Compare password
+    const isPasswordValid = await student.comparePassword(password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials"
+      });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: student._id, email: student.email, role: student.role },
+      SECRET_KEY,
+      { expiresIn: "7d" }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Login successful",
+      data: {
+        student: student.toJSON(),
+        token
+      }
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error logging in",
       error: error.message
     });
   }

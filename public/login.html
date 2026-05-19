@@ -158,9 +158,11 @@ input {
         <!-- REGISTER -->
         <div id="student-register" style="display:none;">
             <input type="text" id="s-name" placeholder="Full Name">
+            <input type="email" id="s-email" placeholder="Email">
+            <input type="password" id="s-password" placeholder="Password">
             <input type="text" id="s-branch" placeholder="Branch">
             <input type="number" id="s-cgpa" step="0.01" placeholder="CGPA">
-            <input type="text" id="s-skills" placeholder="Skills">
+            <input type="text" id="s-skills" placeholder="Skills (comma separated)">
 
             <button class="btn btn-primary" onclick="handleStudentRegister()">Register</button>
 
@@ -196,17 +198,75 @@ function handleAdminLogin() {
     window.location.href = "admin.html";
 }
 
-function handleStudentLogin() {
-    localStorage.setItem('user', JSON.stringify({role: "student"}));
-    window.location.href = "student.html";
+async function handleStudentLogin() {
+    const email = document.getElementById('student-email').value.trim();
+    const password = document.getElementById('student-password').value.trim();
+
+    if (!email || !password) {
+        return alert("Please enter email and password.");
+    }
+
+    try {
+        const response = await fetch("http://localhost:3000/api/students/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            return alert(data.message || "Login failed.");
+        }
+
+        localStorage.setItem('user', JSON.stringify({ role: "student" }));
+        localStorage.setItem('token', data.data.token);
+        localStorage.setItem('currentStudent', JSON.stringify(data.data.student));
+
+        window.location.href = "student.html";
+    } catch (error) {
+        console.error(error);
+        alert("Login failed. Please try again.");
+    }
 }
 
-function handleStudentRegister() {
+async function handleStudentRegister() {
     const name = document.getElementById('s-name').value.trim();
-    if (!name) return alert("Enter name");
+    const email = document.getElementById('s-email').value.trim();
+    const password = document.getElementById('s-password').value.trim();
+    const cgpa = parseFloat(document.getElementById('s-cgpa').value);
+    const skills = document.getElementById('s-skills').value.split(',').map(skill => skill.trim()).filter(Boolean);
 
-    localStorage.setItem('user', JSON.stringify({role: "student"}));
-    window.location.href = "student.html";
+    if (!name || !email || !password || isNaN(cgpa) || skills.length === 0) {
+        return alert("Please fill in all required fields and add at least one skill.");
+    }
+
+    try {
+        const response = await fetch("http://localhost:3000/api/students/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ name, email, password, cgpa, skills })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            return alert(data.message || "Registration failed.");
+        }
+
+        localStorage.setItem('user', JSON.stringify({ role: "student" }));
+        localStorage.setItem('token', data.data.token);
+        localStorage.setItem('currentStudent', JSON.stringify(data.data.student));
+
+        window.location.href = "student.html";
+    } catch (error) {
+        console.error(error);
+        alert("Registration failed. Please try again.");
+    }
 }
 
 window.onload = () => selectRole('admin');

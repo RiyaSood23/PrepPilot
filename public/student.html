@@ -1,39 +1,304 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>PrepPilot • Student Portal</title>
-    <link rel="stylesheet" href="css/student.css">
+
+    <link rel="stylesheet" href="css/student.css" />
+
+    <style>
+
+        .resume-upload-card {
+            background: rgba(20, 20, 20, 0.95);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 24px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.4);
+            backdrop-filter: blur(12px);
+        }
+
+        .resume-upload-card h2 {
+            color: white;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .resume-subtext {
+            color: #a1a1aa;
+            margin-bottom: 25px;
+            font-size: 15px;
+        }
+
+        .resume-form {
+            display: flex;
+            gap: 18px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .custom-file-upload {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .custom-file-upload input[type=file] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .file-label {
+            background: #18181b;
+            color: #d4d4d8;
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 14px 20px;
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: 0.3s ease;
+            min-width: 260px;
+        }
+
+        .file-label:hover {
+            border-color: #4f46e5;
+            transform: translateY(-1px);
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border: none;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(124,58,237,0.4);
+        }
+
+        .upload-status {
+            margin-top: 18px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .resume-icon {
+            font-size: 18px;
+        }
+
+        .selected-file-name {
+            color: #e4e4e7;
+            font-size: 14px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 180px;
+        }
+
+    </style>
 </head>
+
 <body>
+
     <nav class="navbar">
         <div class="nav-container">
-            <div onclick="goHome()" class="logo">PrepPilot</div>
+
+            <div onclick="goHome()" class="logo">
+                PrepPilot
+            </div>
+
             <div class="nav-links">
                 <a href="#" onclick="goHome()">Home</a>
                 <a href="admin.html">Admin</a>
                 <a href="student.html" class="active">Student</a>
                 <a href="#" onclick="logout()">Logout</a>
             </div>
+
         </div>
     </nav>
 
     <div class="student-container">
+
         <div class="view-header">
             <div>
-                <h1>Welcome, <span id="student-name">Student</span></h1>
+                <h1>
+                    Welcome,
+                    <span id="student-name">Student</span>
+                </h1>
             </div>
-            <button onclick="resetStudent()" class="new-reg-btn">New Registration</button>
+
+            <button onclick="resetStudent()" class="new-reg-btn">
+                New Registration
+            </button>
         </div>
 
         <div class="eligibility-note">
-            <span class="green-dot"></span> Eligible  <span class="red-dot"></span> Not Eligible
+            <span class="green-dot"></span> Eligible
+            &nbsp;&nbsp;
+            <span class="red-dot"></span> Not Eligible
+        </div>
+
+        <!-- Resume Upload Section -->
+
+        <div class="resume-upload-card">
+
+            <h2>Upload Resume</h2>
+
+            <p class="resume-subtext">
+                Upload your latest resume (PDF, DOC, DOCX • Max 5MB)
+            </p>
+
+            <form id="resume-upload-form" class="resume-form">
+
+                <div class="custom-file-upload">
+
+                    <label class="file-label">
+
+                        <span class="resume-icon">📄</span>
+
+                        <span class="selected-file-name" id="selected-file-name">
+                            Choose Resume
+                        </span>
+
+                        <input
+                            type="file"
+                            id="resume-file"
+                            name="resume"
+                            accept=".pdf,.doc,.docx"
+                            required
+                        />
+
+                    </label>
+
+                </div>
+
+                <button type="submit" class="upload-btn">
+                    Upload Resume
+                </button>
+
+            </form>
+
+            <p id="upload-status" class="upload-status"></p>
+
         </div>
 
         <div id="student-companies-list" class="companies-grid"></div>
+
     </div>
 
     <script src="js/student.js"></script>
+
+    <script>
+
+        const resumeInput = document.getElementById("resume-file");
+
+        const selectedFileName =
+            document.getElementById("selected-file-name");
+
+        resumeInput.addEventListener("change", () => {
+
+            if (resumeInput.files.length > 0) {
+
+                selectedFileName.innerText =
+                    resumeInput.files[0].name;
+
+            }
+
+        });
+
+        document
+            .getElementById("resume-upload-form")
+            .addEventListener("submit", async (e) => {
+
+                e.preventDefault();
+
+                const fileInput =
+                    document.getElementById("resume-file");
+
+                const status =
+                    document.getElementById("upload-status");
+
+                const formData = new FormData();
+
+                formData.append(
+                    "resume",
+                    fileInput.files[0]
+                );
+
+                try {
+
+                    status.style.color = "#d4d4d8";
+                    status.innerText = "Uploading resume...";
+
+                    const token = localStorage.getItem("token");
+
+                    if (!token) {
+                        status.style.color = "#ef4444";
+                        status.innerText = "You must login first.";
+                        return;
+                    }
+
+                    const response = await fetch(
+                        "http://localhost:3000/api/students/upload-resume",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            },
+
+                            body: formData
+                        }
+                    );
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+
+                        status.style.color = "#22c55e";
+
+                        status.innerText =
+                            "Resume uploaded successfully!";
+
+                        console.log(data);
+
+                    } else {
+
+                        status.style.color = "#ef4444";
+
+                        status.innerText =
+                            data.message || "Upload failed";
+
+                    }
+
+                } catch (error) {
+
+                    status.style.color = "#ef4444";
+
+                    status.innerText =
+                        "Something went wrong";
+
+                    console.error(error);
+
+                }
+
+            });
+
+    </script>
+
 </body>
 </html>
