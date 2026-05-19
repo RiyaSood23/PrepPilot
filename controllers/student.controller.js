@@ -58,6 +58,10 @@ exports.registerStudent = async (req, res) => {
     });
 
     // Generate JWT token
+    if (!SECRET_KEY) {
+      console.error('Missing SECRET_KEY env var');
+      return res.status(500).json({ success: false, message: 'Server configuration error: SECRET_KEY is not set' });
+    }
     const token = jwt.sign(
       { id: student._id, email: student.email, role: student.role },
       SECRET_KEY,
@@ -74,6 +78,10 @@ exports.registerStudent = async (req, res) => {
     });
   } catch (error) {
     console.error("Register error:", error);
+    if (error.name === 'ValidationError') {
+      const errors = Object.values(error.errors).map(e => e.message);
+      return res.status(400).json({ success: false, message: 'Validation error', errors });
+    }
     return res.status(500).json({
       success: false,
       message: "Error registering student",
@@ -221,6 +229,10 @@ exports.loginStudent = async (req, res) => {
     }
 
     // Generate JWT token
+    if (!SECRET_KEY) {
+      console.error('Missing SECRET_KEY env var');
+      return res.status(500).json({ success: false, message: 'Server configuration error: SECRET_KEY is not set' });
+    }
     const token = jwt.sign(
       { id: student._id, email: student.email, role: student.role },
       SECRET_KEY,
@@ -283,6 +295,10 @@ exports.loginStudent = async (req, res) => {
     }
 
     // Generate JWT token
+    if (!SECRET_KEY) {
+      console.error('Missing SECRET_KEY env var');
+      return res.status(500).json({ success: false, message: 'Server configuration error: SECRET_KEY is not set' });
+    }
     const token = jwt.sign(
       { id: student._id, email: student.email, role: student.role },
       SECRET_KEY,

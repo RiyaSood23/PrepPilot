@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:3000";
+const API_BASE = window.location.hostname === "localhost" ? "http://localhost:3000" : "";
 
 if (!localStorage.getItem('user')) {
     localStorage.setItem('user', JSON.stringify({ role: "admin" }));
@@ -36,6 +36,8 @@ async function loadCompanies() {
     const companies = data.data || data || [];
 
     renderCompanies(companies);
+
+    localStorage.setItem('companiesCount', String(companies.length));
 
     const count = document.getElementById('count');
     if (count) count.textContent = companies.length;

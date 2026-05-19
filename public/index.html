@@ -5,6 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PrepPilot • Home</title>
     <link rel="stylesheet" href="css/index.css">
+    <style>
+        .username-badge {
+            background: rgba(79, 70, 229, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 10px 16px;
+            border-radius: 12px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .logout-link {
+            color: #fca5a5;
+            font-weight: 600;
+        }
+    </style>
 </head>
 
 <body>
@@ -15,6 +31,11 @@
                 <a href="index.html" class="active">Home</a>
                 <a href="admin.html">Admin</a>
                 <a href="student.html">Student</a>
+                <a href="profile.html">Profile</a>
+                <a href="analytics.html">Analytics</a>
+                <a href="/companies-view">Companies</a>
+                <span id="navbar-username" class="username-badge" style="display:none;">User</span>
+                <a id="logout-link" href="#" class="logout-link" style="display:none;" onclick="logout(); return false;">Logout</a>
             </div>
         </div>
     </nav>
@@ -86,6 +107,56 @@
     </footer>
 
     <script>
+        const API_BASE = window.location.hostname === "localhost" ? "http://localhost:3000" : "";
+
+        function setNavbarIdentity(label) {
+            const badge = document.getElementById("navbar-username");
+            const logoutLink = document.getElementById("logout-link");
+
+            if (!badge || !logoutLink) {
+                return;
+            }
+
+            badge.textContent = label;
+            badge.style.display = "inline-block";
+            logoutLink.style.display = "inline-block";
+        }
+
+        async function validateSession() {
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+
+                if (storedUser.role === "admin") {
+                    setNavbarIdentity("Admin");
+                }
+
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/api/auth/me`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                if (!res.ok) {
+                    return;
+                }
+
+                const data = await res.json();
+                const username = data?.data?.user?.name;
+
+                if (username) {
+                    setNavbarIdentity(username);
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
         document.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', (e) => {
                 if (link.getAttribute('href').startsWith('#')) {
@@ -96,6 +167,13 @@
                 }
             });
         });
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        validateSession();
     </script>
 </body>
 </html>

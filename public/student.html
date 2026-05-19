@@ -8,6 +8,23 @@
     <link rel="stylesheet" href="css/student.css" />
 
     <style>
+        .username-badge {
+            background: rgba(79, 70, 229, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 10px 16px;
+            border-radius: 12px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .logout-link {
+            color: #fca5a5;
+            font-weight: 600;
+        }
+    </style>
+
+    <style>
 
         .resume-upload-card {
             background: rgba(20, 20, 20, 0.95);
@@ -125,6 +142,10 @@
                 <a href="#" onclick="goHome()">Home</a>
                 <a href="admin.html">Admin</a>
                 <a href="student.html" class="active">Student</a>
+                <a href="profile.html">Profile</a>
+                <a href="analytics.html">Analytics</a>
+                <a href="/companies-view">Companies</a>
+                <span id="navbar-username" class="username-badge">Student</span>
                 <a href="#" onclick="logout()">Logout</a>
             </div>
 
@@ -203,6 +224,43 @@
     <script src="js/student.js"></script>
 
     <script>
+
+        const API_BASE = window.location.hostname === "localhost" ? "http://localhost:3000" : "";
+
+        async function validateSession() {
+            const token = localStorage.getItem("token");
+            const currentStudent = JSON.parse(localStorage.getItem("currentStudent") || "{}");
+
+            if (!token && currentStudent?.name) {
+                document.getElementById("navbar-username").textContent = currentStudent.name;
+                return;
+            }
+
+            if (!token) {
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/api/auth/me`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                if (!res.ok) {
+                    return;
+                }
+
+                const data = await res.json();
+                const username = data?.data?.user?.name;
+
+                if (username) {
+                    document.getElementById("navbar-username").textContent = username;
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
 
         const resumeInput = document.getElementById("resume-file");
 
@@ -297,6 +355,8 @@
                 }
 
             });
+
+        validateSession();
 
     </script>
 

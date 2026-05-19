@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:3000";
+const API_BASE = window.location.hostname === "localhost" ? "http://localhost:3000" : "";
 const token = localStorage.getItem('token');
 const user = JSON.parse(localStorage.getItem('user') || '{}');
 
@@ -54,7 +54,7 @@ function renderCompanies(companies) {
                         Min CGPA: <strong>${company.minCgpa}</strong>
                     </div>
 
-                    <button 
+                    <button
                         onclick="applyToCompany('${company._id}')"
                         class="apply-btn ${eligible ? 'active' : 'disabled'}"
                         ${eligible ? '' : 'disabled'}>
@@ -68,22 +68,25 @@ function renderCompanies(companies) {
 
 async function applyToCompany(companyId) {
     try {
-        const res = await fetch(`${API_BASE}/api/companies/apply/${companyId}`, {
+        const res = await fetch(`${API_BASE}/api/students/apply`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
-            }
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({ jobId: companyId })
         });
 
         if (res.ok) {
             alert("✅ Applied Successfully!");
             loadCompanies();
         } else {
-            throw new Error("Route not found");
+            const data = await res.json().catch(() => ({}));
+            throw new Error(data.message || "Application failed");
         }
 
     } catch (err) {
-        alert("✅ Application Submitted (Demo Mode)");
+        alert(err.message || "Application could not be submitted.");
     }
 }
 

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrepPilot • Analytics Dashboard</title>
+
+    <link rel="stylesheet" href="css/index.css">
+
+    <style>
+        .username-badge {
+            background: rgba(79, 70, 229, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 10px 16px;
+            border-radius: 12px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .logout-link {
+            color: #fca5a5;
+            font-weight: 600;
+        }
+
+        .analytics-container {
+            width: 90%;
+            max-width: 1300px;
+            margin: 40px auto 80px;
+        }
+
+        .page-header {
+            margin-bottom: 35px;
+        }
+
+        .page-header h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            color: #a1a1aa;
+            font-size: 16px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(20,20,20,0.95);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 24px;
+            padding: 30px;
+        }
+
+        .stat-card h2 {
+            font-size: 40px;
+            margin: 0;
+            color: #22c55e;
+        }
+
+        .stat-card p {
+            margin-top: 10px;
+            color: #a1a1aa;
+        }
+
+        .analytics-section {
+            background: rgba(20,20,20,0.95);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 24px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .analytics-section h2 {
+            margin-bottom: 24px;
+            font-size: 28px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        th {
+            color: #22c55e;
+        }
+
+        td {
+            color: #e4e4e7;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #a1a1aa;
+        }
+
+        @media(max-width: 768px) {
+            .nav-links {
+                gap: 14px;
+                flex-wrap: wrap;
+            }
+
+            .page-header h1 {
+                font-size: 36px;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div onclick="goHome()" class="logo">PrepPilot</div>
+
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="student.html">Student</a>
+                <a href="admin.html">Admin</a>
+                <a href="profile.html">Profile</a>
+                <a href="analytics.html" class="active">Analytics</a>
+                <a href="/companies-view">Companies</a>
+                <span id="navbar-username" class="username-badge" style="display:none;">User</span>
+                <a href="#" class="logout-link" onclick="logout(); return false;">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="analytics-container">
+        <div class="page-header">
+            <h1>Placement Analytics</h1>
+            <p>Real-time placement insights and statistics</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h2 id="total-companies">0</h2>
+                <p>Total Companies</p>
+            </div>
+
+            <div class="stat-card">
+                <h2 id="total-applications">0</h2>
+                <p>Total Applications</p>
+            </div>
+
+            <div class="stat-card">
+                <h2 id="placement-rate">0%</h2>
+                <p>Placement Success Rate</p>
+            </div>
+        </div>
+
+        <div class="analytics-section">
+            <h2>Applications by Company</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Company</th>
+                        <th>Total Applications</th>
+                    </tr>
+                </thead>
+                <tbody id="applications-table">
+                    <tr>
+                        <td colspan="2" class="loading">Loading analytics...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="analytics-section">
+            <h2>Average CGPA by Company</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Company</th>
+                        <th>Average CGPA</th>
+                    </tr>
+                </thead>
+                <tbody id="cgpa-table">
+                    <tr>
+                        <td colspan="2" class="loading">Loading analytics...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.hostname === "localhost" ? "http://localhost:3000" : "";
+
+        function getToken() {
+            return localStorage.getItem("token");
+        }
+
+        async function validateSession() {
+            const token = getToken();
+
+            if (!token) {
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/api/auth/me`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                if (!res.ok) {
+                    return;
+                }
+
+                const data = await res.json();
+                const username = data?.data?.user?.name;
+
+                if (username) {
+                    document.getElementById("navbar-username").textContent = username;
+                    document.getElementById("navbar-username").style.display = "inline-block";
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        async function loadAnalytics() {
+            try {
+                const token = getToken();
+                const res = await fetch(`${API_BASE}/api/analytics/placement-stats`, {
+                    headers: token ? { Authorization: `Bearer ${token}` } : {}
+                });
+
+                const result = await res.json();
+                const data = Array.isArray(result?.data) ? result.data : [];
+
+                renderAnalytics(data);
+            } catch (error) {
+                console.error(error);
+
+                document.getElementById("applications-table").innerHTML = `
+                    <tr>
+                        <td colspan="2">Failed to load analytics</td>
+                    </tr>
+                `;
+            }
+        }
+
+        function renderAnalytics(data) {
+            const applicationsTable = document.getElementById("applications-table");
+            const cgpaTable = document.getElementById("cgpa-table");
+
+            if (!Array.isArray(data) || data.length === 0) {
+                applicationsTable.innerHTML = `
+                    <tr>
+                        <td colspan="2">No analytics data found</td>
+                    </tr>
+                `;
+                cgpaTable.innerHTML = `
+                    <tr>
+                        <td colspan="2">No analytics data found</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            const totalCompanies = data.length;
+            const totalApplications = data.reduce((sum, item) => sum + Number(item.totalApplied || item.totalApplications || 0), 0);
+            const totalSelected = data.reduce((sum, item) => sum + Number(item.totalSelected || item.selectedCount || 0), 0);
+            const placementRate = totalApplications > 0 ? ((totalSelected / totalApplications) * 100).toFixed(1) : "0.0";
+
+            document.getElementById("total-companies").textContent = totalCompanies;
+            document.getElementById("total-applications").textContent = totalApplications;
+            document.getElementById("placement-rate").textContent = `${placementRate}%`;
+
+            applicationsTable.innerHTML = data.map((item) => `
+                <tr>
+                    <td>${item.companyName || item.company || "N/A"}</td>
+                    <td>${item.totalApplied || item.totalApplications || 0}</td>
+                </tr>
+            `).join("");
+
+            cgpaTable.innerHTML = data.map((item) => `
+                <tr>
+                    <td>${item.companyName || item.company || "N/A"}</td>
+                    <td>${item.averageCgpa !== null && item.averageCgpa !== undefined ? Number(item.averageCgpa).toFixed(2) : "N/A"}</td>
+                </tr>
+            `).join("");
+        }
+
+        function goHome() {
+            window.location.href = "index.html";
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = "login.html";
+        }
+
+        validateSession();
+        loadAnalytics();
+    </script>
+</body>
+</html>

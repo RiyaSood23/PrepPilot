@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrepPilot • Profile</title>
+
+    <link rel="stylesheet" href="css/index.css">
+
+    <style>
+        .username-badge {
+            background: rgba(79, 70, 229, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 10px 16px;
+            border-radius: 12px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .logout-link {
+            color: #fca5a5;
+            font-weight: 600;
+        }
+
+        .profile-container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 40px auto 80px;
+        }
+
+        .profile-hero {
+            background: rgba(20,20,20,0.95);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 28px;
+            padding: 36px;
+            margin-bottom: 28px;
+        }
+
+        .profile-hero h1 {
+            font-size: 42px;
+            margin-bottom: 12px;
+        }
+
+        .profile-hero p {
+            color: #a1a1aa;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 24px;
+        }
+
+        .profile-card,
+        .summary-card {
+            background: rgba(20,20,20,0.95);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 24px;
+            padding: 28px;
+        }
+
+        .profile-card h2,
+        .summary-card h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-row span:first-child {
+            color: #a1a1aa;
+        }
+
+        .skill-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .skill-pill {
+            background: rgba(34,197,94,0.12);
+            border: 1px solid rgba(34,197,94,0.25);
+            color: #86efac;
+            padding: 8px 12px;
+            border-radius: 999px;
+            font-size: 13px;
+        }
+
+        .summary-card .stat {
+            padding: 18px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .summary-card .stat:last-child {
+            border-bottom: none;
+        }
+
+        .summary-card .stat strong {
+            display: block;
+            font-size: 28px;
+            color: #22c55e;
+            margin-bottom: 4px;
+        }
+
+        .resume-link {
+            color: #86efac;
+            text-decoration: none;
+        }
+
+        @media (max-width: 900px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-hero h1 {
+                font-size: 34px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div onclick="goHome()" class="logo">PrepPilot</div>
+
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="student.html">Student</a>
+                <a href="admin.html">Admin</a>
+                <a href="profile.html" class="active">Profile</a>
+                <a href="analytics.html">Analytics</a>
+                <a href="/companies-view">Companies</a>
+                <span id="navbar-username" class="username-badge" style="display:none;">User</span>
+                <a href="#" class="logout-link" onclick="logout(); return false;">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="profile-container">
+        <section class="profile-hero">
+            <h1 id="profile-name">Profile</h1>
+            <p id="profile-subtitle">Session summary and account details</p>
+        </section>
+
+        <div class="profile-grid">
+            <section class="profile-card">
+                <h2>Account Details</h2>
+                <div class="info-row">
+                    <span>Role</span>
+                    <span id="profile-role">-</span>
+                </div>
+                <div class="info-row">
+                    <span>Email</span>
+                    <span id="profile-email">-</span>
+                </div>
+                <div class="info-row">
+                    <span>CGPA</span>
+                    <span id="profile-cgpa">-</span>
+                </div>
+                <div class="info-row">
+                    <span>Skills</span>
+                    <div id="profile-skills" class="skill-list"></div>
+                </div>
+                <div class="info-row">
+                    <span>Resume</span>
+                    <span id="profile-resume">Not uploaded</span>
+                </div>
+                <div class="info-row">
+                    <span>Applications</span>
+                    <span id="profile-applications">0</span>
+                </div>
+            </section>
+
+            <aside class="summary-card">
+                <h2>Quick Summary</h2>
+                <div class="stat">
+                    <strong id="summary-status">Active</strong>
+                    <span>Current session</span>
+                </div>
+                <div class="stat">
+                    <strong id="summary-company-count">0</strong>
+                    <span>Companies visible in dashboard</span>
+                </div>
+                <div class="stat">
+                    <strong id="summary-resume">No</strong>
+                    <span>Resume uploaded</span>
+                </div>
+                <div class="stat">
+                    <a href="student.html" class="resume-link">Go to Student Portal</a>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.hostname === "localhost" ? "http://localhost:3000" : "";
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = "login.html";
+        }
+
+        function goHome() {
+            window.location.href = "index.html";
+        }
+
+        function renderProfile(user, student, applications) {
+            const name = student?.name || user?.name || "User";
+            document.getElementById("profile-name").textContent = `${name}'s Profile`;
+            document.getElementById("navbar-username").textContent = name;
+            document.getElementById("navbar-username").style.display = "inline-block";
+            document.getElementById("profile-role").textContent = user?.role || student?.role || "student";
+            document.getElementById("profile-email").textContent = student?.email || user?.email || "-";
+            document.getElementById("profile-cgpa").textContent = student?.cgpa !== undefined ? student.cgpa : "-";
+
+            const skillsContainer = document.getElementById("profile-skills");
+            const skills = Array.isArray(student?.skills) ? student.skills : [];
+            skillsContainer.innerHTML = skills.length
+                ? skills.map((skill) => `<span class="skill-pill">${skill}</span>`).join("")
+                : `<span class="skill-pill">No skills saved</span>`;
+
+            const resumeUrl = student?.resumeUrl;
+            document.getElementById("profile-resume").innerHTML = resumeUrl
+                ? `<a class="resume-link" href="${resumeUrl}" target="_blank" rel="noreferrer">View Resume</a>`
+                : "Not uploaded";
+            document.getElementById("summary-resume").textContent = resumeUrl ? "Yes" : "No";
+            document.getElementById("profile-applications").textContent = applications;
+            document.getElementById("profile-subtitle").textContent = user?.role === "admin"
+                ? "Admin account overview"
+                : "Student account overview with resume and application data";
+        }
+
+        async function loadCompanyCount() {
+            try {
+                const response = await fetch(`${API_BASE}/api/companies`);
+                const result = await response.json();
+                const companies = Array.isArray(result?.data) ? result.data : [];
+
+                document.getElementById("summary-company-count").textContent = companies.length;
+                localStorage.setItem("companiesCount", String(companies.length));
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        async function loadProfile() {
+            const token = localStorage.getItem("token");
+            const currentStudent = JSON.parse(localStorage.getItem("currentStudent") || "{}");
+            const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+
+            if (!token && !currentStudent?.name && storedUser?.role !== "admin") {
+                window.location.href = "login.html";
+                return;
+            }
+
+            let user = storedUser;
+            let student = currentStudent;
+            let applications = 0;
+
+            if (token) {
+                try {
+                    const meResponse = await fetch(`${API_BASE}/api/auth/me`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
+
+                    if (meResponse.ok) {
+                        const meData = await meResponse.json();
+                        user = meData?.data?.user || user;
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+
+            if (user?.role === "student" && token) {
+                try {
+                    const applicationsResponse = await fetch(`${API_BASE}/api/students/applications`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
+
+                    if (applicationsResponse.ok) {
+                        const applicationsData = await applicationsResponse.json();
+                        applications = Array.isArray(applicationsData?.data) ? applicationsData.data.length : 0;
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+
+            renderProfile(user, student, applications);
+            loadCompanyCount();
+        }
+
+        loadProfile();
+    </script>
+</body>
+</html>
