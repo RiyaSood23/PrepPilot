@@ -1,4 +1,3 @@
-/* css/admin.css */
 * { margin:0; padding:0; box-sizing:border-box; }
 
 body {
@@ -7,7 +6,8 @@ body {
     color: #e5e5e5;
 }
 
-.navbar { /* same as landing */ 
+/* NAVBAR */
+.navbar {
     background: rgba(10,10,10,0.95);
     backdrop-filter: blur(12px);
     position: sticky;
@@ -15,14 +15,16 @@ body {
     z-index: 100;
     border-bottom: 1px solid #222;
 }
+
 .nav-container {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 18px 40px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    max-width:1280px;
+    margin:0 auto;
+    padding:18px 40px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
 }
+
 .logo {
     font-size: 28px;
     font-weight: 800;
@@ -33,46 +35,55 @@ body {
     cursor: pointer;
 }
 
+.nav-links a {
+    color:#a3a3a3;
+    text-decoration:none;
+    margin-left:32px;
+    font-weight:500;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color:#22c55e;
+}
+
+/* LAYOUT */
 .dashboard-container {
     max-width: 1280px;
     margin: 40px auto;
     padding: 0 40px;
 }
 
-.dashboard-header {
+/* HEADER */
+.view-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
     flex-wrap: wrap;
     gap: 20px;
 }
 
-.dashboard-header h1 {
-    font-size: 2.8rem;
-    font-weight: 800;
+.view-header h1 {
+    font-size: 2.4rem;
 }
 
-.add-btn {
-    background: #22c55e;
-    color: #0a0a0a;
-    border: none;
-    padding: 14px 32px;
-    font-size: 1.1rem;
-    font-weight: 700;
+.new-reg-btn {
+    background: transparent;
+    border: 2px solid #666;
+    color: #ddd;
+    padding: 12px 28px;
     border-radius: 9999px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s;
 }
 
-.add-btn:hover {
-    background: #4ade80;
-    transform: scale(1.05);
+.new-reg-btn:hover {
+    border-color: #22c55e;
+    color: #22c55e;
 }
 
+/* SECTION TITLE */
 .section-title {
     margin-bottom: 24px;
     display: flex;
@@ -93,105 +104,104 @@ body {
     border-radius: 9999px;
 }
 
-/* Companies Grid */
+/* GRID */
 .companies-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
     gap: 24px;
 }
 
+/* CARD */
 .company-card {
     background: #161616;
     border-radius: 20px;
     overflow: hidden;
     border: 1px solid #222;
-    transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+    transition: all 0.4s;
 }
 
 .company-card:hover {
     transform: translateY(-12px);
-    box-shadow: 0 25px 50px -12px rgb(34 197 94 / 0.25);
     border-color: #22c55e;
 }
 
+/* CARD IMAGE */
 .card-header {
     height: 180px;
-    position: relative;
 }
 
 .card-header img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    width:100%;
+    height:100%;
+    object-fit:cover;
 }
 
+/* CARD BODY */
 .card-body {
-    padding: 24px;
+    padding:24px;
 }
 
 .card-body h3 {
-    font-size: 1.5rem;
-    margin-bottom: 8px;
+    font-size:1.5rem;
+    margin-bottom:8px;
 }
 
 .role {
-    color: #86efac;
-    font-weight: 600;
-    margin-bottom: 16px;
+    color:#86efac;
+    font-weight:600;
+    margin-bottom:16px;
 }
 
-.info-row {
+/* INFO */
+.info-grid {
     display: flex;
     justify-content: space-between;
     margin-bottom: 12px;
-    font-size: 1rem;
 }
 
-.info-label { color: #888; }
-.info-value { font-weight: 600; }
-
-.cgpa-badge {
-    background: rgba(34,197,94,0.15);
-    color: #4ade80;
-    padding: 4px 14px;
-    border-radius: 9999px;
-    font-size: 0.95rem;
-    display: inline-block;
-    margin-top: 8px;
-}
-
-.card-actions {
+/* STATS */
+.stats {
     display: flex;
-    gap: 12px;
-    margin-top: 24px;
-    padding-top: 20px;
-    border-top: 1px solid #222;
+    justify-content: space-between;
+    margin: 16px 0;
+    text-align: center;
 }
 
-.card-actions button {
-    flex: 1;
+/* CGPA */
+.cgpa-info {
+    font-size: 0.95rem;
+    color: #aaa;
+}
+
+/* BUTTONS */
+.apply-btn {
+    width: 100%;
+    margin-top: 12px;
     padding: 12px;
+    border-radius: 10px;
     border: none;
-    border-radius: 9999px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
+    background: #333;
+    color: #777;
 }
 
 .delete-btn {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
     background: #ef4444;
     color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
 }
 
-.download-btn {
-    background: #3b82f6;
-    color: white;
+.delete-btn:hover {
+    background: #dc2626;
 }
 
-.delete-btn:hover { background: #f87171; }
-.download-btn:hover { background: #60a5fa; }
-
-/* Modal */
+/* MODAL */
 .modal {
     position: fixed;
     inset: 0;
@@ -207,7 +217,6 @@ body {
     width: 100%;
     max-width: 520px;
     border-radius: 24px;
-    overflow: hidden;
     border: 1px solid #333;
 }
 
@@ -218,8 +227,6 @@ body {
     justify-content: space-between;
     align-items: center;
 }
-
-.modal-header h2 { font-size: 1.6rem; }
 
 .close-btn {
     background: none;
@@ -242,7 +249,6 @@ body {
     display: block;
     margin-bottom: 8px;
     color: #aaa;
-    font-size: 0.95rem;
 }
 
 .form-group input {
@@ -252,13 +258,6 @@ body {
     color: white;
     padding: 14px 18px;
     border-radius: 12px;
-    font-size: 1.05rem;
-}
-
-.form-group input:focus {
-    outline: none;
-    border-color: #22c55e;
-    box-shadow: 0 0 0 3px rgba(34,197,94,0.2);
 }
 
 .modal-actions {
@@ -270,10 +269,9 @@ body {
 
 .cancel-btn, .submit-btn {
     flex: 1;
-    padding: 16px;
-    font-size: 1.1rem;
-    font-weight: 700;
+    padding: 14px;
     border-radius: 9999px;
+    font-weight: 700;
     cursor: pointer;
 }
 

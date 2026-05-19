@@ -11,16 +11,22 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-<<<<<<< HEAD
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
     "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.6.1",
+    "ejs": "^5.0.2",
     "express": "^4.22.1",
+    "express-session": "^1.19.0",
     "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.5.0"
-=======
-    "dotenv": "^16.4.7",
-    "express": "^4.22.1",
     "mongodb": "^7.2.0",
-    "mongoose": "^8.12.1"
->>>>>>> 4cf83678f732bf5bee2b41b847b35187daf38c88
+    "mongoose": "^9.5.0",
+    "pg": "^8.21.0",
+    "socket.io": "^4.8.3"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.20.0",
+    "prisma": "^7.8.0"
   }
 }
